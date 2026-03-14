@@ -1,0 +1,1271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GodzillaVerse — Complete Titan Intelligence Database</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+:root {
+  --nuclear: #00ff88;
+  --nuclear-dim: #00cc66;
+  --lava: #ff4d00;
+  --deep: #040a0e;
+  --dark: #060d12;
+  --panel: #091318;
+  --panel2: #0c1a24;
+  --panel3: #0f2030;
+  --border: #152535;
+  --border2: #1e3a55;
+  --border-glow: #00ff8820;
+  --text: #c0d8e8;
+  --muted: #4a6878;
+  --monarch: #e8b400;
+  --monarch-dim: #a07800;
+  --sky: #00aaff;
+  --threat-low: #00ff88;
+  --threat-med: #ffaa00;
+  --threat-high: #ff6600;
+  --threat-omega: #ff0055;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+body { background:var(--deep); color:var(--text); font-family:'Rajdhani',sans-serif; overflow-x:hidden; }
+body::before {
+  content:''; position:fixed; inset:0; pointer-events:none; z-index:9999;
+  background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,0.02) 3px,rgba(0,0,0,0.02) 4px);
+}
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:var(--deep)}
+::-webkit-scrollbar-thumb{background:var(--border2)}
+::-webkit-scrollbar-thumb:hover{background:var(--nuclear)}
+
+/* ── HEADER ── */
+header {
+  position:fixed; top:0; left:0; right:0; z-index:1000; height:56px;
+  background:rgba(4,10,14,0.95); backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--border); display:flex; align-items:center;
+  padding:0 1.5rem; gap:2rem;
+}
+.logo { font-family:'Bebas Neue',sans-serif; font-size:1.6rem; color:var(--nuclear); letter-spacing:3px; text-shadow:0 0 20px rgba(0,255,136,0.4); white-space:nowrap; cursor:pointer; }
+.logo span { color:#fff; }
+nav { display:flex; gap:0; flex:1; overflow-x:auto; }
+nav::-webkit-scrollbar{display:none}
+.nav-btn {
+  background:none; border:none; color:var(--muted); font-family:'Rajdhani',sans-serif;
+  font-size:0.78rem; font-weight:600; letter-spacing:2px; text-transform:uppercase;
+  padding:0 1rem; height:56px; cursor:pointer; border-bottom:2px solid transparent;
+  white-space:nowrap; transition:all 0.2s;
+}
+.nav-btn:hover, .nav-btn.active { color:var(--nuclear); border-bottom-color:var(--nuclear); }
+.monarch-tag {
+  margin-left:auto; font-family:'Share Tech Mono',monospace; font-size:0.6rem;
+  color:var(--monarch); border:1px solid var(--monarch-dim); padding:0.25rem 0.7rem;
+  letter-spacing:2px; white-space:nowrap; animation:blink 4s infinite;
+}
+@keyframes blink{0%,90%,100%{opacity:1}95%{opacity:0.4}}
+
+/* ── PAGES ── */
+.page { display:none; min-height:100vh; padding-top:56px; }
+.page.active { display:block; }
+
+/* ── HERO ── */
+#page-home {
+  background:radial-gradient(ellipse 80% 60% at 50% 40%,rgba(0,255,136,0.04) 0%,transparent 70%),
+             radial-gradient(ellipse 50% 70% at 10% 90%,rgba(255,77,0,0.05) 0%,transparent 60%),
+             var(--deep);
+  display:flex; align-items:center; justify-content:center; position:relative; overflow:hidden;
+}
+.hero-grid {
+  position:absolute; inset:0;
+  background-image:linear-gradient(rgba(0,255,136,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,255,136,0.025) 1px,transparent 1px);
+  background-size:80px 80px; animation:gridmove 25s linear infinite;
+}
+@keyframes gridmove{0%{transform:translateY(0)}100%{transform:translateY(80px)}}
+.hero-inner { position:relative; z-index:2; text-align:center; padding:2rem; }
+.hero-eye { font-family:'Share Tech Mono',monospace; font-size:0.65rem; color:var(--nuclear); letter-spacing:6px; margin-bottom:1.5rem; opacity:0; animation:fadeup 0.8s 0.2s forwards; }
+.hero-title { font-family:'Bebas Neue',sans-serif; font-size:clamp(4.5rem,14vw,13rem); line-height:0.88; letter-spacing:-1px; opacity:0; animation:fadeup 0.8s 0.4s forwards; }
+.hero-title .t1 { background:linear-gradient(160deg,#fff 0%,#8bbdd4 50%,#1a4a60 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; filter:drop-shadow(0 0 50px rgba(0,160,220,0.15)); }
+.hero-title .t2 { background:linear-gradient(160deg,#00ff88 0%,#00cc66 50%,#003322 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; filter:drop-shadow(0 0 40px rgba(0,255,136,0.3)); }
+.hero-sub { font-size:1rem; color:var(--muted); letter-spacing:5px; text-transform:uppercase; margin-top:0.8rem; opacity:0; animation:fadeup 0.8s 0.6s forwards; }
+.hero-counters { display:flex; gap:3rem; justify-content:center; margin:2.5rem 0; opacity:0; animation:fadeup 0.8s 0.8s forwards; flex-wrap:wrap; }
+.hc { text-align:center; }
+.hc-num { font-family:'Bebas Neue',sans-serif; font-size:2.8rem; color:var(--nuclear); line-height:1; text-shadow:0 0 20px rgba(0,255,136,0.4); }
+.hc-lbl { font-family:'Share Tech Mono',monospace; font-size:0.58rem; color:var(--muted); letter-spacing:3px; margin-top:0.1rem; }
+.hero-btns { display:flex; gap:1rem; justify-content:center; flex-wrap:wrap; opacity:0; animation:fadeup 0.8s 1s forwards; }
+.btn-p { background:var(--nuclear); color:#040a0e; border:none; padding:0.85rem 2.2rem; font-family:'Bebas Neue',sans-serif; font-size:1rem; letter-spacing:3px; cursor:pointer; clip-path:polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%); transition:all 0.2s; }
+.btn-p:hover { background:#fff; transform:translateY(-2px); box-shadow:0 8px 25px rgba(0,255,136,0.25); }
+.btn-s { background:transparent; color:var(--text); border:1px solid var(--border2); padding:0.85rem 2.2rem; font-family:'Bebas Neue',sans-serif; font-size:1rem; letter-spacing:3px; cursor:pointer; clip-path:polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%); transition:all 0.2s; }
+.btn-s:hover { border-color:var(--nuclear); color:var(--nuclear); }
+@keyframes fadeup{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── SECTION SHELL ── */
+.sec { max-width:1440px; margin:0 auto; padding:3rem 1.5rem; }
+.sec-head { display:flex; align-items:baseline; gap:1rem; margin-bottom:2rem; padding-bottom:1rem; border-bottom:1px solid var(--border); flex-wrap:wrap; }
+.sec-title { font-family:'Bebas Neue',sans-serif; font-size:2.2rem; color:#fff; letter-spacing:2px; }
+.sec-code { font-family:'Share Tech Mono',monospace; font-size:0.65rem; color:var(--nuclear); letter-spacing:3px; }
+.sec-count { margin-left:auto; font-family:'Share Tech Mono',monospace; font-size:0.65rem; color:var(--muted); }
+
+/* ── CONTROLS COMMON ── */
+.ctrl-row { display:flex; gap:0.6rem; margin-bottom:1.2rem; flex-wrap:wrap; align-items:center; }
+.tog { background:transparent; border:1px solid var(--border); color:var(--muted); padding:0.45rem 1.1rem; font-family:'Rajdhani',sans-serif; font-size:0.78rem; font-weight:600; letter-spacing:2px; text-transform:uppercase; cursor:pointer; transition:all 0.2s; }
+.tog:hover,.tog.on { background:rgba(0,255,136,0.08); border-color:var(--nuclear); color:var(--nuclear); }
+.tog.monarch:hover,.tog.monarch.on { background:rgba(232,180,0,0.08); border-color:var(--monarch); color:var(--monarch); }
+.fsel { background:var(--panel); border:1px solid var(--border); color:var(--text); padding:0.45rem 0.9rem; font-family:'Share Tech Mono',monospace; font-size:0.65rem; letter-spacing:1px; outline:none; cursor:pointer; }
+.fsel:focus { border-color:var(--nuclear); }
+.srchwrap { position:relative; flex:1; min-width:180px; }
+.srchwrap::before { content:'⌕'; position:absolute; left:0.7rem; top:50%; transform:translateY(-50%); color:var(--muted); font-size:1rem; pointer-events:none; }
+.srch { width:100%; background:var(--panel); border:1px solid var(--border); color:var(--text); padding:0.45rem 0.9rem 0.45rem 2.2rem; font-family:'Share Tech Mono',monospace; font-size:0.7rem; letter-spacing:1px; outline:none; transition:border-color 0.2s; }
+.srch:focus { border-color:var(--nuclear); background:var(--panel2); }
+
+/* ── WATCH ORDER ── */
+.era-pills { display:flex; gap:0.4rem; flex-wrap:wrap; margin-bottom:1.5rem; }
+.epill { font-family:'Share Tech Mono',monospace; font-size:0.6rem; letter-spacing:2px; padding:0.25rem 0.75rem; border:1px solid var(--border); color:var(--muted); cursor:pointer; transition:all 0.2s; text-transform:uppercase; }
+.epill:hover,.epill.on { background:rgba(232,180,0,0.07); border-color:var(--monarch); color:var(--monarch); }
+.tl { display:flex; flex-direction:column; gap:1px; }
+.tli {
+  display:grid; grid-template-columns:52px 44px 1fr 80px;
+  gap:1rem; align-items:center; padding:1rem 1.2rem;
+  background:var(--panel); border:1px solid transparent; border-left:3px solid transparent;
+  cursor:pointer; transition:all 0.2s;
+}
+.tli:hover { background:var(--panel2); border-color:var(--border); border-left-color:var(--nuclear); }
+.tli.open { background:var(--panel2); border-left-color:var(--nuclear); border-color:var(--border); }
+.tli-num { font-family:'Bebas Neue',sans-serif; font-size:1.6rem; color:var(--border2); text-align:center; transition:all 0.2s; }
+.tli:hover .tli-num,.tli.open .tli-num { color:var(--nuclear); text-shadow:0 0 12px var(--nuclear); }
+.tli-icon { width:44px; height:44px; border:1px solid var(--border); display:flex; align-items:center; justify-content:center; font-size:1.1rem; }
+.tli-body { min-width:0; }
+.tli-title { font-size:1.05rem; font-weight:700; color:#fff; letter-spacing:0.5px; }
+.tli-meta { display:flex; gap:0.8rem; margin-top:0.25rem; align-items:center; flex-wrap:wrap; }
+.tli-year { font-family:'Share Tech Mono',monospace; font-size:0.65rem; color:var(--muted); }
+.epill-sm { font-family:'Share Tech Mono',monospace; font-size:0.55rem; letter-spacing:2px; padding:0.12rem 0.55rem; border:1px solid; text-transform:uppercase; }
+.e-monsterverse{border-color:#0099ff;color:#0099ff} .e-showa{border-color:#ff88aa;color:#ff88aa}
+.e-heisei{border-color:var(--monarch);color:var(--monarch)} .e-reiwa{border-color:var(--nuclear);color:var(--nuclear)}
+.e-millennium{border-color:#aa44ff;color:#aa44ff} .e-animation{border-color:#00ccff;color:#00ccff}
+.tchips { display:flex; gap:0.3rem; flex-wrap:wrap; margin-top:0.35rem; }
+.tchip { font-family:'Share Tech Mono',monospace; font-size:0.55rem; background:rgba(0,255,136,0.07); border:1px solid rgba(0,255,136,0.18); color:var(--nuclear); padding:0.1rem 0.45rem; }
+.tli-score { text-align:right; }
+.score-num { font-family:'Bebas Neue',sans-serif; font-size:1.4rem; color:var(--monarch); }
+.score-plat { font-family:'Share Tech Mono',monospace; font-size:0.58rem; color:var(--muted); margin-top:0.1rem; }
+.tli-expand {
+  display:none; grid-column:1/-1; border-top:1px solid var(--border); padding-top:1rem; margin-top:0.5rem;
+}
+.tli-expand.show { display:block; }
+.exp-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:0.8rem; margin-bottom:0.8rem; }
+.exp-f label { font-family:'Share Tech Mono',monospace; font-size:0.58rem; color:var(--muted); letter-spacing:2px; display:block; margin-bottom:0.15rem; }
+.exp-f span { font-size:0.88rem; font-weight:600; }
+.exp-syn { font-size:0.88rem; color:var(--text); line-height:1.65; }
+
+/* ── TITANDEX ── */
+.tdex-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(265px,1fr)); gap:1px; }
+.tcard {
+  background:var(--panel); border:1px solid transparent; padding:1.3rem;
+  cursor:pointer; transition:all 0.22s; position:relative; overflow:hidden;
+}
+.tcard::after { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:linear-gradient(90deg,transparent,var(--card-accent,var(--nuclear)),transparent); opacity:0; transition:opacity 0.2s; }
+.tcard:hover { background:var(--panel2); border-color:var(--border2); transform:translateY(-2px); box-shadow:0 8px 24px rgba(0,0,0,0.4); }
+.tcard:hover::after { opacity:1; }
+.tcard[data-alignment="alpha"] { --card-accent:#ff4444; }
+.tcard[data-alignment="hostile"] { --card-accent:var(--lava); }
+.tcard[data-alignment="benevolent"] { --card-accent:var(--nuclear); }
+.tcard[data-alignment="neutral"] { --card-accent:var(--muted); }
+.tcard[data-alignment="unknown"] { --card-accent:var(--sky); }
+.tc-top { display:flex; justify-content:space-between; align-items:flex-start; }
+.tc-id { font-family:'Share Tech Mono',monospace; font-size:0.58rem; color:var(--muted); letter-spacing:2px; }
+.threat-b { font-family:'Share Tech Mono',monospace; font-size:0.55rem; letter-spacing:2px; padding:0.18rem 0.55rem; border:1px solid; text-transform:uppercase; }
+.tl-low{border-color:var(--threat-low);color:var(--threat-low)}
+.tl-medium{border-color:var(--threat-med);color:var(--threat-med)}
+.tl-high{border-color:var(--threat-high);color:var(--threat-high)}
+.tl-omega{border-color:var(--threat-omega);color:var(--threat-omega);animation:omegapulse 2s infinite}
+@keyframes omegapulse{0%,100%{box-shadow:0 0 4px rgba(255,0,85,0.3)}50%{box-shadow:0 0 12px rgba(255,0,85,0.7)}}
+.tc-emoji { font-size:2.5rem; margin:0.6rem 0; line-height:1; filter:drop-shadow(0 3px 8px rgba(0,0,0,0.5)); }
+.tc-name { font-family:'Bebas Neue',sans-serif; font-size:1.45rem; color:#fff; letter-spacing:2px; line-height:1; }
+.tc-alias { font-family:'Share Tech Mono',monospace; font-size:0.58rem; color:var(--muted); letter-spacing:1px; margin-top:0.15rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.tc-mini { display:grid; grid-template-columns:1fr 1fr; gap:0.4rem; margin-top:0.9rem; padding-top:0.9rem; border-top:1px solid var(--border); }
+.tcm label { font-family:'Share Tech Mono',monospace; font-size:0.52rem; color:var(--muted); letter-spacing:2px; display:block; }
+.tcm span { font-size:0.78rem; font-weight:700; }
+.al-alpha{color:#ff4444} .al-hostile{color:var(--lava)} .al-benevolent{color:var(--nuclear)} .al-neutral{color:var(--muted)} .al-unknown{color:var(--sky)}
+.st-alive{color:var(--nuclear)} .st-dormant{color:var(--monarch)} .st-deceased{color:var(--muted)} .st-unknown{color:var(--sky)}
+.pbar { display:flex; gap:2px; margin-top:0.7rem; }
+.pseg { height:3px; flex:1; background:var(--border); }
+.pseg.on { background:var(--nuclear); box-shadow:0 0 4px var(--nuclear); }
+.pseg.lava { background:var(--lava); box-shadow:0 0 4px var(--lava); }
+.tc-hint { font-family:'Share Tech Mono',monospace; font-size:0.55rem; color:var(--muted); letter-spacing:2px; margin-top:0.8rem; text-align:center; opacity:0; transition:opacity 0.2s; }
+.tcard:hover .tc-hint { opacity:1; }
+
+/* ── MODAL ── */
+.moverlay { position:fixed; inset:0; background:rgba(4,10,14,0.96); z-index:3000; display:none; align-items:center; justify-content:center; padding:1rem; backdrop-filter:blur(6px); }
+.moverlay.open { display:flex; animation:min 0.25s ease; }
+@keyframes min{from{opacity:0;transform:scale(0.96)}to{opacity:1;transform:scale(1)}}
+.modal { background:var(--panel); border:1px solid var(--border2); width:100%; max-width:900px; max-height:92vh; overflow-y:auto; }
+.mhead { display:flex; align-items:flex-start; gap:1.5rem; padding:1.5rem; background:var(--panel2); border-bottom:1px solid var(--border); position:sticky; top:0; z-index:10; }
+.mhead-info { flex:1; }
+.mid { font-family:'Share Tech Mono',monospace; font-size:0.6rem; color:var(--muted); letter-spacing:3px; margin-bottom:0.25rem; }
+.mname { font-family:'Bebas Neue',sans-serif; font-size:2.2rem; color:#fff; letter-spacing:3px; line-height:1; }
+.malias { font-family:'Share Tech Mono',monospace; font-size:0.65rem; color:var(--muted); letter-spacing:2px; margin-top:0.2rem; }
+.mclose { background:none; border:1px solid var(--border); color:var(--muted); width:34px; height:34px; cursor:pointer; font-size:0.9rem; transition:all 0.2s; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.mclose:hover { border-color:var(--lava); color:var(--lava); }
+.mbody { padding:1.5rem; display:grid; grid-template-columns:200px 1fr; gap:1.5rem; }
+@media(max-width:600px){.mbody{grid-template-columns:1fr}}
+.mleft { display:flex; flex-direction:column; gap:1rem; }
+.mdisp { background:var(--deep); border:1px solid var(--border); padding:1.5rem; text-align:center; }
+.memoji { font-size:5rem; filter:drop-shadow(0 0 25px rgba(0,255,136,0.15)); animation:floatm 4s ease-in-out infinite; }
+@keyframes floatm{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.mbadges { display:flex; flex-direction:column; gap:0.4rem; margin-top:1rem; align-items:center; }
+.mright { display:flex; flex-direction:column; gap:0.8rem; }
+.mstats { background:var(--deep); border:1px solid var(--border); padding:1rem; }
+.mstat-row { display:flex; justify-content:space-between; padding:0.55rem 0; border-bottom:1px solid var(--border); gap:1rem; }
+.mstat-row:last-child { border-bottom:none; }
+.mstat-row label { font-family:'Share Tech Mono',monospace; font-size:0.58rem; color:var(--muted); letter-spacing:2px; text-transform:uppercase; flex-shrink:0; }
+.mstat-row .v { font-size:0.88rem; font-weight:600; text-align:right; }
+.mblock { background:var(--deep); border:1px solid var(--border); padding:1rem; grid-column:1/-1; }
+.mblock-title { font-family:'Bebas Neue',sans-serif; font-size:1.1rem; letter-spacing:3px; color:var(--nuclear); margin-bottom:0.7rem; }
+.tags { display:flex; gap:0.4rem; flex-wrap:wrap; }
+.ptag { background:rgba(0,255,136,0.07); border:1px solid rgba(0,255,136,0.18); color:var(--nuclear); font-family:'Share Tech Mono',monospace; font-size:0.6rem; letter-spacing:1px; padding:0.25rem 0.7rem; }
+.atag { background:rgba(232,180,0,0.07); border:1px solid rgba(232,180,0,0.18); color:var(--monarch); font-family:'Share Tech Mono',monospace; font-size:0.6rem; letter-spacing:1px; padding:0.25rem 0.7rem; }
+.wtag { background:rgba(255,77,0,0.07); border:1px solid rgba(255,77,0,0.18); color:var(--lava); font-family:'Share Tech Mono',monospace; font-size:0.6rem; letter-spacing:1px; padding:0.25rem 0.7rem; }
+
+/* ── EPISODE TRACKER ── */
+.show-tabs { display:flex; gap:0; border-bottom:1px solid var(--border); margin-bottom:1.5rem; overflow-x:auto; }
+.show-tabs::-webkit-scrollbar{display:none}
+.stab { background:none; border:none; color:var(--muted); font-family:'Rajdhani',sans-serif; font-size:0.8rem; font-weight:600; letter-spacing:2px; text-transform:uppercase; padding:0.8rem 1.5rem; cursor:pointer; border-bottom:2px solid transparent; white-space:nowrap; transition:all 0.2s; }
+.stab:hover,.stab.on { color:var(--nuclear); border-bottom-color:var(--nuclear); }
+.ep-list { display:flex; flex-direction:column; gap:1px; }
+.ep-item { display:grid; grid-template-columns:50px 1fr; gap:1rem; align-items:start; padding:1rem 1.2rem; background:var(--panel); border:1px solid transparent; border-left:3px solid transparent; cursor:pointer; transition:all 0.2s; }
+.ep-item:hover { background:var(--panel2); border-color:var(--border); border-left-color:var(--monarch); }
+.ep-item.open { background:var(--panel2); border-left-color:var(--monarch); border-color:var(--border); }
+.ep-num { font-family:'Bebas Neue',sans-serif; font-size:1.5rem; color:var(--border2); text-align:center; }
+.ep-item:hover .ep-num,.ep-item.open .ep-num { color:var(--monarch); }
+.ep-title { font-size:1rem; font-weight:700; color:#fff; }
+.ep-sub { font-family:'Share Tech Mono',monospace; font-size:0.6rem; color:var(--muted); letter-spacing:2px; margin-top:0.2rem; }
+.ep-titans { display:flex; gap:0.3rem; flex-wrap:wrap; margin-top:0.4rem; }
+.ep-titan-tag { font-family:'Share Tech Mono',monospace; font-size:0.55rem; background:rgba(232,180,0,0.07); border:1px solid rgba(232,180,0,0.18); color:var(--monarch); padding:0.1rem 0.45rem; }
+.ep-expand { display:none; grid-column:1/-1; border-top:1px solid var(--border); padding-top:0.8rem; margin-top:0.6rem; font-size:0.88rem; color:var(--text); line-height:1.65; }
+.ep-expand.show { display:block; }
+
+/* ── SIZE COMPARISON ── */
+.size-wrap { background:var(--panel); border:1px solid var(--border); padding:1.5rem; overflow-x:auto; }
+.size-scale { display:flex; align-items:flex-end; gap:4px; height:280px; padding-bottom:1rem; border-bottom:1px solid var(--border2); min-width:600px; }
+.sbar-col { display:flex; flex-direction:column; align-items:center; flex:1; height:100%; justify-content:flex-end; }
+.sbar { width:100%; transition:height 1.2s cubic-bezier(0.34,1.56,0.64,1); position:relative; cursor:pointer; min-width:30px; }
+.sbar:hover { filter:brightness(1.3); }
+.sbar-inner { width:100%; height:100%; background:linear-gradient(to top,var(--nuclear-dim),var(--nuclear)); opacity:0.8; position:relative; }
+.sbar-inner::after { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:#fff; box-shadow:0 0 8px var(--nuclear); }
+.sbar-label { font-family:'Share Tech Mono',monospace; font-size:0.5rem; color:var(--muted); letter-spacing:1px; margin-top:0.5rem; text-align:center; transform:rotate(-45deg); transform-origin:top left; white-space:nowrap; }
+.sbar-val { font-family:'Share Tech Mono',monospace; font-size:0.55rem; color:var(--nuclear); margin-bottom:0.3rem; }
+.size-legend { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:0.5rem; margin-top:1.5rem; }
+.sleg-item { display:flex; align-items:center; gap:0.7rem; padding:0.4rem; }
+.sleg-bar { width:12px; height:12px; background:var(--nuclear); flex-shrink:0; }
+.sleg-info { font-family:'Share Tech Mono',monospace; font-size:0.6rem; color:var(--text); }
+.sleg-info span { color:var(--nuclear); }
+
+/* ── RELATIONSHIP WEB ── */
+#rel-canvas { width:100%; height:500px; background:var(--panel); border:1px solid var(--border); cursor:grab; display:block; }
+#rel-canvas:active { cursor:grabbing; }
+.rel-legend { display:flex; gap:1.5rem; flex-wrap:wrap; margin-bottom:1rem; }
+.rleg { display:flex; align-items:center; gap:0.5rem; font-family:'Share Tech Mono',monospace; font-size:0.62rem; color:var(--muted); letter-spacing:1px; }
+.rleg-line { width:30px; height:2px; }
+
+/* ── BATTLE SIMULATOR ── */
+.sim-wrap { display:grid; grid-template-columns:1fr auto 1fr; gap:1.5rem; align-items:start; }
+@media(max-width:700px){.sim-wrap{grid-template-columns:1fr;text-align:center}}
+.sim-slot { background:var(--panel); border:1px solid var(--border); padding:1.5rem; text-align:center; cursor:pointer; transition:all 0.2s; min-height:220px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:0.5rem; }
+.sim-slot:hover { border-color:var(--nuclear); background:var(--panel2); }
+.sim-slot.selected { border-color:var(--nuclear); background:var(--panel2); }
+.sim-slot.fighter2.selected { border-color:var(--lava); }
+.sim-placeholder { font-family:'Share Tech Mono',monospace; font-size:0.65rem; color:var(--muted); letter-spacing:3px; }
+.sim-emoji-big { font-size:4rem; filter:drop-shadow(0 4px 12px rgba(0,0,0,0.5)); }
+.sim-fname { font-family:'Bebas Neue',sans-serif; font-size:1.5rem; color:#fff; letter-spacing:2px; }
+.sim-mid { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:1rem; }
+.vs-text { font-family:'Bebas Neue',sans-serif; font-size:3rem; color:var(--lava); text-shadow:0 0 20px var(--lava); }
+.fight-btn { background:var(--lava); color:#fff; border:none; padding:0.8rem 2rem; font-family:'Bebas Neue',sans-serif; font-size:1.1rem; letter-spacing:3px; cursor:pointer; clip-path:polygon(6px 0,100% 0,calc(100% - 6px) 100%,0 100%); transition:all 0.2s; }
+.fight-btn:hover:not(:disabled) { background:#ff7733; transform:scale(1.05); }
+.fight-btn:disabled { opacity:0.4; cursor:not-allowed; }
+.sim-result { margin-top:1.5rem; background:var(--panel2); border:1px solid var(--border2); padding:1.5rem; display:none; }
+.sim-result.show { display:block; animation:fadeup 0.5s ease; }
+.res-title { font-family:'Bebas Neue',sans-serif; font-size:1.8rem; color:var(--nuclear); letter-spacing:3px; margin-bottom:1rem; text-align:center; }
+.res-winner-name { font-family:'Bebas Neue',sans-serif; font-size:2.5rem; color:#fff; }
+.res-analysis { font-size:0.9rem; color:var(--text); line-height:1.7; margin-top:0.8rem; }
+.stat-compare { display:grid; grid-template-columns:1fr auto 1fr; gap:0.5rem; margin-top:1rem; }
+.sc-stat { padding:0.4rem; font-size:0.8rem; font-weight:600; }
+.sc-stat.left { text-align:right; }
+.sc-stat.right { text-align:left; }
+.sc-label { font-family:'Share Tech Mono',monospace; font-size:0.6rem; color:var(--muted); text-align:center; letter-spacing:2px; padding:0.4rem; }
+.sc-win { color:var(--nuclear); }
+.sc-lose { color:var(--muted); }
+.sim-picker { background:var(--panel); border:1px solid var(--border); padding:1rem; margin-bottom:1rem; display:none; }
+.sim-picker.show { display:block; }
+.pick-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(120px,1fr)); gap:0.5rem; max-height:280px; overflow-y:auto; margin-top:0.8rem; }
+.pick-card { background:var(--panel2); border:1px solid var(--border); padding:0.7rem; text-align:center; cursor:pointer; transition:all 0.15s; }
+.pick-card:hover { border-color:var(--nuclear); background:var(--panel3); }
+.pick-emoji { font-size:1.8rem; }
+.pick-name { font-family:'Rajdhani',sans-serif; font-size:0.75rem; font-weight:700; color:#fff; margin-top:0.2rem; }
+
+/* ── TIMELINE ── */
+.timeline-wrap { position:relative; padding-left:2rem; }
+.timeline-wrap::before { content:''; position:absolute; left:0; top:0; bottom:0; width:1px; background:linear-gradient(to bottom,transparent,var(--border2) 5%,var(--border2) 95%,transparent); }
+.tlev { position:relative; padding:0 0 2rem 2rem; }
+.tlev::before { content:''; position:absolute; left:-4px; top:6px; width:9px; height:9px; background:var(--nuclear); border:2px solid var(--deep); border-radius:50%; box-shadow:0 0 8px var(--nuclear); }
+.tlev-year { font-family:'Bebas Neue',sans-serif; font-size:1.1rem; color:var(--nuclear); letter-spacing:3px; margin-bottom:0.4rem; }
+.tlev-content { background:var(--panel); border:1px solid var(--border); padding:1rem 1.2rem; border-left:3px solid; }
+.tlev-title { font-size:0.95rem; font-weight:700; color:#fff; margin-bottom:0.3rem; }
+.tlev-desc { font-size:0.85rem; color:var(--text); line-height:1.6; }
+.tlev-tags { display:flex; gap:0.4rem; flex-wrap:wrap; margin-top:0.6rem; }
+.tlev-tag { font-family:'Share Tech Mono',monospace; font-size:0.55rem; padding:0.15rem 0.5rem; border:1px solid; }
+
+/* ── FULL SCREEN BG FOR PAGES ── */
+#page-titandex, #page-watchorder, #page-episodes, #page-size, #page-relations, #page-simulator, #page-timeline {
+  background:var(--deep);
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo" onclick="showPage('home')">GODZILLA<span>VERSE</span></div>
+  <nav>
+    <button class="nav-btn" onclick="showPage('watchorder')">Watch Order</button>
+    <button class="nav-btn" onclick="showPage('titandex')">TitanDex</button>
+    <button class="nav-btn" onclick="showPage('episodes')">Episode Tracker</button>
+    <button class="nav-btn" onclick="showPage('size')">Size Chart</button>
+    <button class="nav-btn" onclick="showPage('relations')">Titan Web</button>
+    <button class="nav-btn" onclick="showPage('simulator')">Battle Sim</button>
+    <button class="nav-btn" onclick="showPage('timeline')">Timeline</button>
+  </nav>
+  <div class="monarch-tag">◆ MONARCH INTEL</div>
+</header>
+
+<!-- HOME -->
+<div class="page active" id="page-home">
+  <div class="hero-grid"></div>
+  <div class="hero-inner" style="min-height:calc(100vh - 56px);display:flex;align-items:center;justify-content:center;position:relative;z-index:2;">
+    <div style="text-align:center;padding:2rem;">
+      <div class="hero-eye">// MONARCH SCIENCES — TITAN INTELLIGENCE ARCHIVE v2.0 //</div>
+      <div class="hero-title"><div class="t1">GODZILLA</div><div class="t2">VERSE</div></div>
+      <div class="hero-sub">The Complete Titan Encyclopedia & Watch Guide</div>
+      <div class="hero-counters">
+        <div class="hc"><div class="hc-num">80+</div><div class="hc-lbl">Titans Catalogued</div></div>
+        <div class="hc"><div class="hc-num">38+</div><div class="hc-lbl">Films & Shows</div></div>
+        <div class="hc"><div class="hc-num">7</div><div class="hc-lbl">Cinematic Eras</div></div>
+        <div class="hc"><div class="hc-num">1954</div><div class="hc-lbl">First Contact</div></div>
+      </div>
+      <div class="hero-btns">
+        <button class="btn-p" onclick="showPage('watchorder')">Begin Watch Order</button>
+        <button class="btn-s" onclick="showPage('titandex')">Open TitanDex</button>
+        <button class="btn-s" onclick="showPage('simulator')">Battle Simulator</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- WATCH ORDER -->
+<div class="page" id="page-watchorder">
+<div class="sec">
+  <div class="sec-head">
+    <h2 class="sec-title">Watch Order</h2>
+    <span class="sec-code">// CONTENT_CATALOG</span>
+    <span class="sec-count" id="wo-count">38 ENTRIES</span>
+  </div>
+  <div class="ctrl-row">
+    <button class="tog on" onclick="setWO(this,'all')">All</button>
+    <button class="tog" onclick="setWO(this,'release')">Release Order</button>
+    <button class="tog" onclick="setWO(this,'monsterverse')">MonsterVerse Only</button>
+    <button class="tog" onclick="setWO(this,'toho')">Toho Only</button>
+    <button class="tog" onclick="setWO(this,'animation')">Animation Only</button>
+  </div>
+  <div class="era-pills" id="era-pills">
+    <span class="epill on" onclick="setEra(this,'all')">All Eras</span>
+    <span class="epill" onclick="setEra(this,'showa')">Shōwa</span>
+    <span class="epill" onclick="setEra(this,'heisei')">Heisei</span>
+    <span class="epill" onclick="setEra(this,'millennium')">Millennium</span>
+    <span class="epill" onclick="setEra(this,'monsterverse')">MonsterVerse</span>
+    <span class="epill" onclick="setEra(this,'reiwa')">Reiwa</span>
+    <span class="epill" onclick="setEra(this,'animation')">Animation</span>
+  </div>
+  <div class="tl" id="wo-list"></div>
+</div>
+</div>
+
+<!-- TITANDEX -->
+<div class="page" id="page-titandex">
+<div class="sec">
+  <div class="sec-head">
+    <h2 class="sec-title">TitanDex</h2>
+    <span class="sec-code">// TITAN_ENCYCLOPEDIA</span>
+    <span class="sec-count" id="tdex-count">80 TITANS</span>
+  </div>
+  <div class="ctrl-row">
+    <div class="srchwrap"><input class="srch" type="text" placeholder="SEARCH TITANS, POWERS, ORIGINS..." id="tdex-search" oninput="filterTdex()"></div>
+    <select class="fsel" id="tdex-align" onchange="filterTdex()">
+      <option value="all">All Alignments</option>
+      <option value="alpha">Alpha</option>
+      <option value="benevolent">Benevolent</option>
+      <option value="hostile">Hostile</option>
+      <option value="neutral">Neutral</option>
+      <option value="unknown">Unknown</option>
+    </select>
+    <select class="fsel" id="tdex-status" onchange="filterTdex()">
+      <option value="all">All Status</option>
+      <option value="alive">Alive</option>
+      <option value="dormant">Dormant</option>
+      <option value="deceased">Deceased</option>
+      <option value="unknown">Unknown</option>
+    </select>
+    <select class="fsel" id="tdex-threat" onchange="filterTdex()">
+      <option value="all">All Threats</option>
+      <option value="low">Low</option>
+      <option value="medium">Medium</option>
+      <option value="high">High</option>
+      <option value="omega">Omega</option>
+    </select>
+    <select class="fsel" id="tdex-era" onchange="filterTdex()">
+      <option value="all">All Universes</option>
+      <option value="monsterverse">MonsterVerse</option>
+      <option value="toho">Toho</option>
+      <option value="both">Both</option>
+    </select>
+  </div>
+  <div class="tdex-grid" id="tdex-grid"></div>
+</div>
+</div>
+
+<!-- EPISODES -->
+<div class="page" id="page-episodes">
+<div class="sec">
+  <div class="sec-head">
+    <h2 class="sec-title">Episode Tracker</h2>
+    <span class="sec-code">// SERIES_CATALOG</span>
+  </div>
+  <div class="show-tabs" id="show-tabs"></div>
+  <div class="ep-list" id="ep-list"></div>
+</div>
+</div>
+
+<!-- SIZE CHART -->
+<div class="page" id="page-size">
+<div class="sec">
+  <div class="sec-head">
+    <h2 class="sec-title">Titan Scale</h2>
+    <span class="sec-code">// SIZE_COMPARISON</span>
+  </div>
+  <div class="ctrl-row">
+    <button class="tog on" onclick="setSizeFilter(this,'all')">All</button>
+    <button class="tog" onclick="setSizeFilter(this,'monsterverse')">MonsterVerse</button>
+    <button class="tog" onclick="setSizeFilter(this,'toho')">Toho</button>
+    <button class="tog" onclick="setSizeFilter(this,'flying')">Flying</button>
+  </div>
+  <div class="size-wrap">
+    <div class="size-scale" id="size-scale"></div>
+  </div>
+  <div class="size-legend" id="size-legend"></div>
+</div>
+</div>
+
+<!-- RELATION WEB -->
+<div class="page" id="page-relations">
+<div class="sec">
+  <div class="sec-head">
+    <h2 class="sec-title">Titan Relationship Web</h2>
+    <span class="sec-code">// SOCIAL_HIERARCHY</span>
+  </div>
+  <div class="rel-legend">
+    <div class="rleg"><div class="rleg-line" style="background:var(--nuclear)"></div>Alliance / Allies</div>
+    <div class="rleg"><div class="rleg-line" style="background:var(--lava)"></div>Rivalry / Enemy</div>
+    <div class="rleg"><div class="rleg-line" style="background:var(--monarch)"></div>Alpha Dominance</div>
+    <div class="rleg"><div class="rleg-line" style="background:var(--sky)"></div>Neutral / Complex</div>
+  </div>
+  <canvas id="rel-canvas"></canvas>
+  <div style="font-family:'Share Tech Mono',monospace;font-size:0.62rem;color:var(--muted);margin-top:0.8rem;letter-spacing:2px;text-align:center;">DRAG TO EXPLORE — HOVER NODES FOR DETAILS</div>
+</div>
+</div>
+
+<!-- BATTLE SIMULATOR -->
+<div class="page" id="page-simulator">
+<div class="sec">
+  <div class="sec-head">
+    <h2 class="sec-title">Battle Simulator</h2>
+    <span class="sec-code">// COMBAT_ANALYSIS</span>
+  </div>
+  <div class="sim-picker" id="sim-picker">
+    <div style="font-family:'Share Tech Mono',monospace;font-size:0.65rem;color:var(--nuclear);letter-spacing:3px;" id="picker-label">SELECT FIGHTER 1</div>
+    <div class="srchwrap" style="margin-top:0.7rem;max-width:300px;"><input class="srch" type="text" placeholder="FILTER..." id="picker-search" oninput="filterPicker()"></div>
+    <div class="pick-grid" id="pick-grid"></div>
+  </div>
+  <div class="sim-wrap">
+    <div class="sim-slot" id="slot1" onclick="openPicker(1)">
+      <div class="sim-placeholder">+ SELECT TITAN 1</div>
+    </div>
+    <div class="sim-mid">
+      <div class="vs-text">VS</div>
+      <button class="fight-btn" id="fight-btn" disabled onclick="runSim()">SIMULATE</button>
+    </div>
+    <div class="sim-slot fighter2" id="slot2" onclick="openPicker(2)">
+      <div class="sim-placeholder">+ SELECT TITAN 2</div>
+    </div>
+  </div>
+  <div class="sim-result" id="sim-result"></div>
+</div>
+</div>
+
+<!-- TIMELINE -->
+<div class="page" id="page-timeline">
+<div class="sec">
+  <div class="sec-head">
+    <h2 class="sec-title">Monarch Timeline</h2>
+    <span class="sec-code">// IN-UNIVERSE_CHRONOLOGY</span>
+  </div>
+  <div class="ctrl-row">
+    <button class="tog on" onclick="setTLFilter(this,'all')">All</button>
+    <button class="tog" onclick="setTLFilter(this,'monsterverse')">MonsterVerse</button>
+    <button class="tog" onclick="setTLFilter(this,'toho')">Toho</button>
+    <button class="tog" onclick="setTLFilter(this,'discovery')">Titan Events</button>
+    <button class="tog" onclick="setTLFilter(this,'monarch')">Monarch Events</button>
+  </div>
+  <div class="timeline-wrap" id="tl-wrap"></div>
+</div>
+</div>
+
+<!-- TITAN MODAL -->
+<div class="moverlay" id="titan-modal" onclick="closeModal(event)">
+  <div class="modal" id="modal-body"></div>
+</div>
+
+<script is:inline>
+// ═══════════════════════════════════════════════════════════
+//  DATA
+// ═══════════════════════════════════════════════════════════
+
+const MOVIES = [
+  {n:1,title:"Godzilla",year:1954,era:"showa",type:"film",score:"7.5",platform:"Criterion",titans:["Godzilla"],dir:"Ishirō Honda",dur:"96 min",syn:"The nuclear-age parable that started it all. Godzilla rises from the Pacific, devastating Tokyo. A masterwork of postwar Japanese horror.",universe:"toho"},
+  {n:2,title:"Godzilla Raids Again",year:1955,era:"showa",type:"film",score:"6.2",platform:"Criterion",titans:["Godzilla","Anguirus"],dir:"Motoyoshi Oda",dur:"82 min",syn:"Godzilla returns and battles Anguirus — the franchise's first monster vs. monster fight. Sets the template for kaiju combat.",universe:"toho"},
+  {n:3,title:"King Kong vs. Godzilla",year:1962,era:"showa",type:"film",score:"6.8",platform:"Peacock",titans:["Godzilla","King Kong"],dir:"Ishirō Honda",dur:"91 min",syn:"Two legends clash. Toho's most commercially successful entry for decades. Color era begins.",universe:"toho"},
+  {n:4,title:"Mothra vs. Godzilla",year:1964,era:"showa",type:"film",score:"7.1",platform:"Criterion",titans:["Godzilla","Mothra"],dir:"Ishirō Honda",dur:"88 min",syn:"Mothra defends humanity. One of the most emotionally resonant entries in the Shōwa era.",universe:"toho"},
+  {n:5,title:"Ghidorah, The Three-Headed Monster",year:1964,era:"showa",type:"film",score:"7.0",platform:"Criterion",titans:["Godzilla","Rodan","Mothra","King Ghidorah"],dir:"Ishirō Honda",dur:"93 min",syn:"King Ghidorah arrives from space. The monsters unite for the first time against a common cosmic threat.",universe:"toho"},
+  {n:6,title:"Invasion of Astro-Monster",year:1965,era:"showa",type:"film",score:"7.0",platform:"Criterion",titans:["Godzilla","Rodan","King Ghidorah"],dir:"Ishirō Honda",dur:"96 min",syn:"Aliens from Planet X commandeer Godzilla. Alien invasion becomes a recurring franchise theme.",universe:"toho"},
+  {n:7,title:"Ebirah, Horror of the Deep",year:1966,era:"showa",type:"film",score:"5.8",platform:"Criterion",titans:["Godzilla","Ebirah","Mothra"],dir:"Jun Fukuda",dur:"87 min",syn:"Godzilla awakens on an island fortress used by a terrorist organization. Lighter tone than previous entries.",universe:"toho"},
+  {n:8,title:"Son of Godzilla",year:1967,era:"showa",type:"film",score:"5.9",platform:"Criterion",titans:["Godzilla","Minilla","Kamacuras","Kumonga"],dir:"Jun Fukuda",dur:"86 min",syn:"Minilla introduced. Godzilla as protective father figure — the franchise's family-friendly pivot.",universe:"toho"},
+  {n:9,title:"Destroy All Monsters",year:1968,era:"showa",type:"film",score:"6.8",platform:"Criterion",titans:["Godzilla","Rodan","Mothra","King Ghidorah","Anguirus","Minilla","Gorosaurus","Kumonga"],dir:"Ishirō Honda",dur:"88 min",syn:"All monsters assembled on Monster Island. Alien control. Ultimate Shōwa showdown.",universe:"toho"},
+  {n:10,title:"All Monsters Attack",year:1969,era:"showa",type:"film",score:"5.2",platform:"Criterion",titans:["Godzilla","Minilla","Gabara"],dir:"Ishirō Honda",dur:"70 min",syn:"A child's dream adventure. Controversial fan split — loathed or loved for its unique child-centric framing.",universe:"toho"},
+  {n:11,title:"Godzilla vs. Hedorah",year:1971,era:"showa",type:"film",score:"6.5",platform:"Criterion",titans:["Godzilla","Hedorah"],dir:"Yoshimitsu Banno",dur:"85 min",syn:"Psychedelic anti-pollution horror. Hedorah — the Smog Monster — is one of the franchise's most original villains.",universe:"toho"},
+  {n:12,title:"Godzilla vs. Gigan",year:1972,era:"showa",type:"film",score:"6.0",platform:"Criterion",titans:["Godzilla","Anguirus","Gigan","King Ghidorah"],dir:"Jun Fukuda",dur:"89 min",syn:"Gigan introduced. Alien cockroaches in disguise control the cyborg kaiju. Godzilla and Anguirus communicate via thought balloons.",universe:"toho"},
+  {n:13,title:"Godzilla vs. Megalon",year:1973,era:"showa",type:"film",score:"5.5",platform:"Criterion",titans:["Godzilla","Megalon","Jet Jaguar","Gigan"],dir:"Jun Fukuda",dur:"81 min",syn:"Jet Jaguar debuts. Submarine civilisation Seatopia attacks. Camp classic.",universe:"toho"},
+  {n:14,title:"Godzilla vs. Mechagodzilla",year:1974,era:"showa",type:"film",score:"6.5",platform:"Criterion",titans:["Godzilla","Mechagodzilla","King Caesar","Anguirus"],dir:"Jun Fukuda",dur:"84 min",syn:"Mechagodzilla revealed as an alien weapon disguised as Godzilla. Space titanium hull. King Caesar awakens.",universe:"toho"},
+  {n:15,title:"Terror of Mechagodzilla",year:1975,era:"showa",type:"film",score:"6.6",platform:"Criterion",titans:["Godzilla","Mechagodzilla","Titanosaurus"],dir:"Ishirō Honda",dur:"83 min",syn:"Honda's final Godzilla film. Mechagodzilla upgraded with a human controller. Titanosaurus introduced. Melancholic finale.",universe:"toho"},
+  {n:16,title:"Return of Godzilla",year:1984,era:"heisei",type:"film",score:"6.5",platform:"Criterion",titans:["Godzilla"],dir:"Koji Hashimoto",dur:"103 min",syn:"Reboot. Cold War tensions as backdrop. Godzilla is a pure force of nature once more. Darker than Shōwa era.",universe:"toho"},
+  {n:17,title:"Godzilla vs. Biollante",year:1989,era:"heisei",type:"film",score:"7.0",platform:"Criterion",titans:["Godzilla","Biollante"],dir:"Kazuki Ōmori",dur:"104 min",syn:"G-cells spliced into a rose. Biollante — one of the franchise's most inventive and tragic creations.",universe:"toho"},
+  {n:18,title:"Godzilla vs. King Ghidorah",year:1991,era:"heisei",type:"film",score:"7.1",platform:"Criterion",titans:["Godzilla","King Ghidorah","Mecha-King Ghidorah"],dir:"Kazuki Ōmori",dur:"102 min",syn:"Time travel retcons Godzilla's origin. Ghidorah created by future humans as a bioweapon. Mecha-King Ghidorah.",universe:"toho"},
+  {n:19,title:"Godzilla vs. Mothra",year:1992,era:"heisei",type:"film",score:"6.8",platform:"Criterion",titans:["Godzilla","Mothra","Battra"],dir:"Takao Okawara",dur:"102 min",syn:"Mothra and dark twin Battra battle Godzilla. Earth's original guardians face humanity's hubris.",universe:"toho"},
+  {n:20,title:"Godzilla vs. Mechagodzilla II",year:1993,era:"heisei",type:"film",score:"7.0",platform:"Criterion",titans:["Godzilla","Mechagodzilla","Rodan","Baby Godzilla"],dir:"Takao Okawara",dur:"108 min",syn:"UN builds Mechagodzilla from salvaged parts. Baby Godzilla subplot provides emotional core.",universe:"toho"},
+  {n:21,title:"Godzilla vs. SpaceGodzilla",year:1994,era:"heisei",type:"film",score:"6.2",platform:"Criterion",titans:["Godzilla","SpaceGodzilla","Godzilla Junior","MOGUERA"],dir:"Kensho Yamashita",dur:"108 min",syn:"Cosmic clone born from Godzilla's cells in a black hole. Crystalline power. Junior in peril.",universe:"toho"},
+  {n:22,title:"Godzilla vs. Destoroyah",year:1995,era:"heisei",type:"film",score:"7.6",platform:"Criterion",titans:["Godzilla","Destoroyah","Godzilla Junior"],dir:"Takao Okawara",dur:"103 min",syn:"Godzilla's heart melts down. Nuclear death march. Tragic, operatic finale. Godzilla dies.",universe:"toho"},
+  {n:23,title:"Godzilla 2000",year:1999,era:"millennium",type:"film",score:"6.5",platform:"Criterion",titans:["Godzilla","Orga"],dir:"Takao Okawara",dur:"99 min",syn:"New millennium, clean slate. UFO alien absorbs G-cells to create Orga. Godzilla's atomic breath regenerated.",universe:"toho"},
+  {n:24,title:"Godzilla vs. Megaguirus",year:2000,era:"millennium",type:"film",score:"6.0",platform:"Criterion",titans:["Godzilla","Megaguirus"],dir:"Masaaki Tezuka",dur:"105 min",syn:"Alternate history Japan. Godzilla attacked by prehistoric dragonfly queen Megaguirus and her swarm.",universe:"toho"},
+  {n:25,title:"GMK: Giant Monsters All-Out Attack",year:2001,era:"millennium",type:"film",score:"7.3",platform:"Criterion",titans:["Godzilla","King Ghidorah","Mothra","Baragon"],dir:"Shusuke Kaneko",dur:"105 min",syn:"Godzilla as a villain possessed by WWII victims' vengeful spirits. Ghidorah recast as a guardian. Kaneko's masterpiece.",universe:"toho"},
+  {n:26,title:"Godzilla: Tokyo S.O.S.",year:2003,era:"millennium",type:"film",score:"6.6",platform:"Criterion",titans:["Godzilla","Mechagodzilla","Mothra","Kamoebas"],dir:"Masaaki Tezuka",dur:"91 min",syn:"Sequel to Mechagodzilla 2002. Mothra demands Godzilla's remains. Mechagodzilla rebuilt. Interconnected lore.",universe:"toho"},
+  {n:27,title:"Godzilla: Final Wars",year:2004,era:"millennium",type:"film",score:"6.8",platform:"Criterion",titans:["Godzilla","Monster X","Gigan","Mothra","Rodan","Anguirus","King Caesar","Hedorah","Ebirah","Kumonga","Zilla"],dir:"Ryuhei Kitamura",dur:"125 min",syn:"Every monster returns for the 50th anniversary. Maximum chaos. Godzilla battles all. Alien invasion. Epic send-off.",universe:"toho"},
+  {n:28,title:"Shin Godzilla",year:2016,era:"reiwa",type:"film",score:"7.5",platform:"Max/Criterion",titans:["Shin Godzilla"],dir:"Hideaki Anno & Shinji Higuchi",dur:"120 min",syn:"Post-Fukushima bureaucracy satire. Godzilla evolves in real time. Japan paralysed by red tape. Haunting and deeply original.",universe:"toho"},
+  {n:29,title:"Godzilla (2014)",year:2014,era:"monsterverse",type:"film",score:"6.4",platform:"Max",titans:["Godzilla","MUTO Male","MUTO Female"],dir:"Gareth Edwards",dur:"123 min",syn:"MonsterVerse begins. Godzilla as nature's corrective force. MUTOs awaken. Ford Brody's journey. Slow-burn payoff.",universe:"monsterverse"},
+  {n:30,title:"Kong: Skull Island",year:2017,era:"monsterverse",type:"film",score:"6.6",platform:"Max",titans:["Kong","Skullcrawler","Mother Longlegs","Leafwing","Spore Mantis"],dir:"Jordan Vogt-Roberts",dur:"118 min",syn:"1970s Apocalypse Now aesthetic. Kong established as Skull Island's Alpha. Hollow Earth mythology begins.",universe:"monsterverse"},
+  {n:31,title:"Godzilla: King of the Monsters",year:2019,era:"monsterverse",type:"film",score:"6.0",platform:"Max",titans:["Godzilla","King Ghidorah","Mothra","Rodan","Scylla","Behemoth","Methuselah","Na Kika","Baphomet"],dir:"Michael Dougherty",dur:"132 min",syn:"Eco-terrorists awaken all Titans. Ghidorah as alien usurper. Mothra sacrifices herself. Godzilla radiates Boston.",universe:"monsterverse"},
+  {n:32,title:"Godzilla vs. Kong",year:2021,era:"monsterverse",type:"film",score:"5.9",platform:"Max",titans:["Godzilla","Kong","Mechagodzilla","Warbat","Nozuki"],dir:"Adam Wingard",dur:"113 min",syn:"Kong journeys to Hollow Earth. Mechagodzilla possessed by Ghidorah's skull goes rogue. Kong gets an axe.",universe:"monsterverse"},
+  {n:33,title:"Monarch: Legacy of Monsters S1",year:2023,era:"monsterverse",type:"series",score:"7.5",platform:"Apple TV+",titans:["Godzilla","Frost Vark","Doug","Ion Dragon","MUTO"],dir:"Matt Shakman",dur:"10 eps",syn:"Cold War Monarch history interleaved with present-day conspiracy. Kurt and Wyatt Russell. Family secrets and Titan emergence.",universe:"monsterverse"},
+  {n:34,title:"Godzilla x Kong: The New Empire",year:2024,era:"monsterverse",type:"film",score:"6.0",platform:"Max",titans:["Godzilla","Kong","Skar King","Shimo","Mothra","Doug"],dir:"Adam Wingard",dur:"115 min",syn:"Deep Hollow Earth reveals ancient enslaved Titans. Skar King and frozen Shimo. Team-up to save both worlds.",universe:"monsterverse"},
+  {n:35,title:"Godzilla Singular Point",year:2021,era:"reiwa",type:"series",score:"7.3",platform:"Netflix",titans:["Godzilla","Rodan","Anguirus","Salunga","Manda","Gabara"],dir:"Atsushi Takahashi",dur:"13 eps",syn:"Hard sci-fi anime. Godzilla as theoretical physics crisis. Dense, cerebral, and visually inventive.",universe:"toho"},
+  {n:36,title:"Godzilla Minus One",year:2023,era:"reiwa",type:"film",score:"8.0",platform:"Netflix",titans:["Godzilla"],dir:"Takashi Yamazaki",dur:"124 min",syn:"Post-WWII survivor guilt vs extinction-level threat. Academy Award for VFX. Emotionally devastating.",universe:"toho"},
+  {n:37,title:"Godzilla: Planet of the Monsters",year:2017,era:"animation",type:"film",score:"6.0",platform:"Netflix",titans:["Godzilla Earth","Servum"],dir:"Kōbun Shizuno & Hiroyuki Seshita",dur:"89 min",syn:"Anime trilogy part 1. Humanity returns to an Earth dominated by a 300m Godzilla after 20,000 years.",universe:"animation"},
+  {n:38,title:"Godzilla: The Planet Eater",year:2018,era:"animation",type:"film",score:"5.8",platform:"Netflix",titans:["Godzilla Earth","Ghidorah (Void)"],dir:"Kōbun Shizuno & Hiroyuki Seshita",dur:"91 min",syn:"Anime trilogy finale. Void Ghidorah as cosmic annihilator beyond physics. Nihilistic conclusion.",universe:"animation"},
+];
+
+const TITANS = [
+  {id:"T-001",name:"Godzilla",alias:"King of the Monsters / Gojira",emoji:"🦖",align:"alpha",status:"alive",threat:"omega",height:"119m",weight:"99,634t",habitat:"Pacific Ocean depths",first:"Godzilla (1954)",origin:"Radioactive prehistoric amphibian mutated by nuclear testing",powers:["Atomic Breath","Nuclear Pulse","Thermonuclear Boost","Regeneration","Amphibious","Alpha Roar"],weakness:"Extreme cold / Nuclear overload",universe:"both",tags:["radioactive","amphibious","alpha"]},
+  {id:"T-002",name:"King Ghidorah",alias:"Monster Zero / The Void Titan",emoji:"🐉",align:"hostile",status:"deceased",threat:"omega",height:"158m",weight:"141,056t",habitat:"Space / Atmosphere",first:"Ghidorah (1964)",origin:"Ancient extraterrestrial apex predator, three-headed golden dragon",powers:["Gravity Beams","Electric Bite","Hurricane Wings","Flight","Cellular Regeneration","Psychic Override"],weakness:"Godzilla's atomic breath, Mothra's venom",universe:"both",tags:["alien","space","psychic"]},
+  {id:"T-003",name:"Mothra",alias:"Queen of the Monsters / The Divine Moth",emoji:"🦋",align:"benevolent",status:"dormant",threat:"high",height:"25m / 244m span",weight:"20,000t",habitat:"Infant Island / Hollow Earth",first:"Mothra (1961)",origin:"Ancient divine moth connected to all life on Earth",powers:["Bioluminescent Scales","Silk Spray","EMP Pulse","Energy Transfer","Spore Regeneration","Divine Wind"],weakness:"Physical damage without scales",universe:"both",tags:["divine","silk","symbiotic"]},
+  {id:"T-004",name:"Rodan",alias:"Fire Demon / Lord of the Skies",emoji:"🦅",align:"hostile",status:"dormant",threat:"high",height:"46m / 265m span",weight:"35,587t",habitat:"Active volcanoes",first:"Rodan (1956)",origin:"Prehistoric pterosaur mutated by volcanic radiation",powers:["Supersonic Flight Mach 3+","Heat Beam","Shockwave Wings","Fire Immunity","Volcanic Resistance"],weakness:"Alpha Call, extreme cold",universe:"both",tags:["flying","volcanic","prehistoric"]},
+  {id:"T-005",name:"Kong",alias:"The Last King / Hollow Earth Alpha",emoji:"🦍",align:"benevolent",status:"alive",threat:"high",height:"103m",weight:"50,000t",habitat:"Skull Island / Hollow Earth",first:"Kong: Skull Island (2017)",origin:"Last of the Titanus Kong species, raised on Skull Island",powers:["Superhuman Strength","Tool Use","Axe (Hollow Earth energy)","Combat Intelligence","Concussive Roar"],weakness:"Godzilla's atomic breath",universe:"monsterverse",tags:["primate","tool-use","hollow-earth"]},
+  {id:"T-006",name:"Mechagodzilla",alias:"Steel Titan / Apex Weapon",emoji:"🤖",align:"hostile",status:"deceased",threat:"omega",height:"120m",weight:"100,000t",habitat:"Apex Cybernetics Facility",first:"Godzilla vs. Mechagodzilla (1974)",origin:"Built by Apex Cybernetics, Ghidorah's skull as neural interface",powers:["Proton Scream","Mega-Corona Beam","Titanium Plating","Nano-Metal Repair","Psychic Override"],weakness:"Power disconnection, nuclear pulse",universe:"both",tags:["mechanical","cybernetic","weapon"]},
+  {id:"T-007",name:"Biollante",alias:"The Floral Titan / G-Hybrid",emoji:"🌺",align:"neutral",status:"dormant",threat:"high",height:"120m",weight:"220,000t",habitat:"Lake Ashi / Orbit",first:"Godzilla vs. Biollante (1989)",origin:"Godzilla cells spliced with rose DNA and a human soul",powers:["Acid Whip Vines","Regeneration","Energy Absorption","Spore Form","Corrosive Mist"],weakness:"Anti-Nuclear Energy Bacteria",universe:"toho",tags:["plant","hybrid","tragic"]},
+  {id:"T-008",name:"Destoroyah",alias:"Destroyer / The Oxygen Born",emoji:"☠️",align:"hostile",status:"deceased",threat:"omega",height:"120m",weight:"80,000t",habitat:"Tokyo Bay",first:"Godzilla vs. Destoroyah (1995)",origin:"Crustaceans mutated by the Oxygen Destroyer device from 1954",powers:["Micro-Oxygen Beam","Laser Horn","Variable Slicer","Micro-Oxygen Cloud","Evolutionary Mutation"],weakness:"Extreme cold, nuclear meltdown",universe:"toho",tags:["crustacean","oxygen","mutation"]},
+  {id:"T-009",name:"Anguirus",alias:"Brave Knight / The Resilient",emoji:"🦔",align:"benevolent",status:"dormant",threat:"medium",height:"60m",weight:"30,000t",habitat:"Underground / Arctic",first:"Godzilla Raids Again (1955)",origin:"Prehistoric ankylosaurid predating the dinosaurs",powers:["Spiked Carapace","Burrowing","Supersonic Scream","Endurance","Shell Defense"],weakness:"Exposed underbelly",universe:"both",tags:["armored","burrowing","loyal"]},
+  {id:"T-010",name:"Shin Godzilla",alias:"God Incarnate / The Evolving God",emoji:"🩸",align:"hostile",status:"dormant",threat:"omega",height:"118.5m",weight:"92,000t",habitat:"Tokyo (fused with cityscape)",first:"Shin Godzilla (2016)",origin:"Deep-sea creature evolved by consuming nuclear waste from Tokyo Bay",powers:["Purple Atomic Beam","Dorsal Fin Beam Emission","Tail Beam","Rapid Evolution","EMP Disruption","Asexual Reproduction"],weakness:"Blood coagulant serum",universe:"toho",tags:["evolving","nuclear","grotesque"]},
+  {id:"T-011",name:"Skar King",alias:"The Tyrant / Subterranea's Warlord",emoji:"👑",align:"hostile",status:"deceased",threat:"high",height:"100m+",weight:"45,000t",habitat:"Deep Hollow Earth",first:"Godzilla x Kong: The New Empire (2024)",origin:"Ancient Titanus Kong who enslaved other Titans in Hollow Earth",powers:["Shimo Control Whip","Primal Ferocity","Enhanced Speed","Tactical Mind","Psychological Domination"],weakness:"Lost control of Shimo",universe:"monsterverse",tags:["primate","tyrant","hollow-earth"]},
+  {id:"T-012",name:"Shimo",alias:"The Frozen Titan / The Ice Queen",emoji:"🧊",align:"neutral",status:"alive",threat:"omega",height:"150m+",weight:"unknown",habitat:"Deep Hollow Earth",first:"Godzilla x Kong: The New Empire (2024)",origin:"Ancient apex predator imprisoned by Skar King via crystal control",powers:["Absolute Zero Breath","Cryogenic Field","Glaciation Wave","Immense Physical Size","Ice Immunity"],weakness:"None known once freed",universe:"monsterverse",tags:["ice","ancient","imprisoned"]},
+  {id:"T-013",name:"Gigan",alias:"The Cyborg Beast / Nebula M Space Hunter",emoji:"🪓",align:"hostile",status:"dormant",threat:"high",height:"65m",weight:"25,000t",habitat:"Outer Space / Nebula M",first:"Godzilla vs. Gigan (1972)",origin:"Alien cyborg weapon, originally a living creature modified as a war machine",powers:["Buzzsaw Abdomen","Bladed Forearms","Eye Laser","Cluster Light Bullets","Mach 3 Flight"],weakness:"Godzilla and Anguirus combined",universe:"toho",tags:["cyborg","alien","bladed"]},
+  {id:"T-014",name:"Battra",alias:"Black Mothra / Dark Guardian",emoji:"🖤",align:"hostile",status:"deceased",threat:"high",height:"25m / 180m span",weight:"20,000t",habitat:"Arctic / Undersea",first:"Godzilla vs. Mothra (1992)",origin:"Ancient guardian created by Earth itself to punish humanity",powers:["Prism Beams","Energy Absorption","Larval Horn Beam","EMP Disruption","Rapid Metamorphosis"],weakness:"Mothra's divine light",universe:"toho",tags:["dark","guardian","counterpart"]},
+  {id:"T-015",name:"SpaceGodzilla",alias:"The Cosmic Clone / Crystal God",emoji:"🌌",align:"hostile",status:"deceased",threat:"omega",height:"120m",weight:"80,000t",habitat:"Outer Space / Crystal Fortress",first:"Godzilla vs. SpaceGodzilla (1994)",origin:"Godzilla cells mutated inside a black hole, born as a cosmic entity",powers:["Corona Beam","Crystalline Shield","Psychokinesis","Gravity Tornado","Shoulder Crystal Cannons"],weakness:"MOGUERA targeting crystals",universe:"toho",tags:["space","crystal","psychic"]},
+  {id:"T-016",name:"Orga",alias:"The Alien Absorber",emoji:"👽",align:"hostile",status:"deceased",threat:"high",height:"60m",weight:"40,000t",habitat:"Tokyo",first:"Godzilla 2000 (1999)",origin:"UFO alien that absorbed G-cells attempting to become Godzilla",powers:["G-Cell Absorption","Shoulder Cannon Beam","Regeneration","Physical Engulfing","Durable Exoskeleton"],weakness:"Godzilla's nuclear blast from inside",universe:"toho",tags:["alien","absorber","grotesque"]},
+  {id:"T-017",name:"Baragon",alias:"Underground Monster / Gentle Giant",emoji:"🐶",align:"benevolent",status:"dormant",threat:"low",height:"30m",weight:"250t",habitat:"Subterranean caves",first:"Frankenstein vs. Baragon (1965)",origin:"Prehistoric subterranean mammal",powers:["Burrowing","Heat Ray","Illuminating Horn","Subterranean Speed","Fire Immunity"],weakness:"Exposure above ground",universe:"toho",tags:["underground","gentle","prehistoric"]},
+  {id:"T-018",name:"Hedorah",alias:"The Smog Monster / Pollution God",emoji:"☁️",align:"hostile",status:"dormant",threat:"high",height:"60m",weight:"70,000t",habitat:"Industrial areas / Atmosphere",first:"Godzilla vs. Hedorah (1971)",origin:"Tadpole-like alien organism that mutated by consuming industrial pollution",powers:["Toxic Sludge","Sulphuric Mist","Energy Beam","Flight (flying disc form)","Absorption","Multiple Forms"],weakness:"Dehydration (electric drying method)",universe:"toho",tags:["pollution","alien","shapeshifter"]},
+  {id:"T-019",name:"King Caesar",alias:"Ancient Island Guardian",emoji:"🦁",align:"benevolent",status:"dormant",threat:"medium",height:"50m",weight:"30,000t",habitat:"Okinawan sea caverns",first:"Godzilla vs. Mechagodzilla (1974)",origin:"Ancient guardian deity of the Azumi royal family, awakened by song",powers:["Beam Deflection","Agile Combat","Rock Hardened Hide","Solar Energy Absorption"],weakness:"Dormancy without the Azumi lullaby",universe:"toho",tags:["guardian","ancient","deity"]},
+  {id:"T-020",name:"Godzilla Junior",alias:"Little Godzilla / Godzilla 2",emoji:"🥚",align:"benevolent",status:"alive",threat:"medium",height:"40m (adult)",weight:"various",habitat:"Adonoa Island / Pacific",first:"Godzilla vs. Mechagodzilla II (1993)",origin:"Godzillasaurus hatched from an egg on Adona Island, raised by humans",powers:["Atomic Breath (developing)","Radiation Absorption","Regeneration"],weakness:"MUTO larvae (juvenile), Destoroyah",universe:"toho",tags:["juvenile","successor","emotional"]},
+  {id:"T-021",name:"MUTO",alias:"Massive Unidentified Terrestrial Organism",emoji:"🕷️",align:"hostile",status:"deceased",threat:"high",height:"55m (male) / 98m (female)",weight:"unknown",habitat:"Underground / Nuclear sites",first:"Godzilla (2014)",origin:"Ancient parasitic organism that fed on nuclear radiation inside Godzilla ancestors",powers:["EMP Generation","Echolocation","Radiation Feeding","Flight (male)","Radioactive Eggs"],weakness:"Godzilla's atomic breath",universe:"monsterverse",tags:["parasite","EMP","nuclear"]},
+  {id:"T-022",name:"Scylla",alias:"The Arachnid Titan",emoji:"🕸️",align:"neutral",status:"dormant",threat:"high",height:"unknown",weight:"unknown",habitat:"Undersea / Arctic",first:"Godzilla: King of the Monsters (2019)",origin:"Ancient cephalopod-arachnid hybrid Titan of unknown origin",powers:["Multiple Appendages","Deep Freeze Tolerance","Aquatic Speed","Ink Ejection"],weakness:"Godzilla Alpha Call",universe:"monsterverse",tags:["arachnid","aquatic","ancient"]},
+  {id:"T-023",name:"Behemoth",alias:"The Mammoth Titan",emoji:"🦣",align:"neutral",status:"dormant",threat:"medium",height:"unknown",weight:"unknown",habitat:"Amazon Basin",first:"Godzilla: King of the Monsters (2019)",origin:"Ancient megafauna Titan resembling a giant mammoth, slumbering in Brazil",powers:["Immense Physical Strength","Armored Hide","Seismic Tremors"],weakness:"Godzilla Alpha Call",universe:"monsterverse",tags:["megafauna","mammoth","terrestrial"]},
+  {id:"T-024",name:"Methuselah",alias:"The Mountain Titan",emoji:"⛰️",align:"neutral",status:"dormant",threat:"medium",height:"unknown",weight:"unknown",habitat:"Munich, Germany (underground)",first:"Godzilla: King of the Monsters (2019)",origin:"Ancient Titan whose body has become part of the landscape over millennia",powers:["Geological Camouflage","Immense Size","Seismic Force"],weakness:"Godzilla Alpha Call",universe:"monsterverse",tags:["ancient","terrestrial","geological"]},
+  {id:"T-025",name:"Na Kika",alias:"The Cephalopod Titan",emoji:"🐙",align:"neutral",status:"dormant",threat:"high",height:"unknown",weight:"unknown",habitat:"Deep Ocean",first:"Godzilla: King of the Monsters (2019)",origin:"Ancient deep-sea cephalopod of extraordinary size",powers:["Aquatic Speed","Tentacle Reach","Bio-Electric Discharge"],weakness:"Godzilla Alpha Call",universe:"monsterverse",tags:["cephalopod","aquatic","electric"]},
+  {id:"T-026",name:"Warbat",alias:"Atlas Moth / Nozuki",emoji:"🐍",align:"hostile",status:"deceased",threat:"medium",height:"various",weight:"various",habitat:"Hollow Earth",first:"Godzilla vs. Kong (2021)",origin:"Flying serpentine Titan native to the Hollow Earth",powers:["Flight","Venom Injection","Constriction","Hollow Earth Adaptation"],weakness:"Kong (killed in Hollow Earth)",universe:"monsterverse",tags:["serpentine","flying","hollow-earth"]},
+  {id:"T-027",name:"Frost Vark",alias:"Arctic Titan",emoji:"❄️",align:"hostile",status:"dormant",threat:"high",height:"unknown",weight:"unknown",habitat:"Arctic / Hollow Earth",first:"Monarch: Legacy of Monsters (2023)",origin:"Ice-adapted Titan encountered during early Monarch expeditions",powers:["Cryogenic Breath","Armored Hide","Subterranean Burrowing"],weakness:"Heat-based weaponry",universe:"monsterverse",tags:["arctic","ice","burrowing"]},
+  {id:"T-028",name:"Doug",alias:"Valley Titan / The Gentle Giant",emoji:"🦒",align:"neutral",status:"alive",threat:"low",height:"unknown",weight:"unknown",habitat:"Hollow Earth valley",first:"Godzilla vs. Kong (2021)",origin:"Herbivorous Titan dwelling in Hollow Earth valleys",powers:["Camouflage","Immense Size","Territorial Call"],weakness:"Larger Titans",universe:"monsterverse",tags:["herbivore","hollow-earth","peaceful"]},
+  {id:"T-029",name:"Godzilla Earth",alias:"Ultimate Godzilla / The Planet God",emoji:"🌍",align:"hostile",status:"dormant",threat:"omega",height:"300m",weight:"100,000t+",habitat:"Future Earth (20,000 years)",first:"Godzilla: Planet of the Monsters (2017)",origin:"Godzilla who evolved over 20,000 years to become one with Earth itself",powers:["Hyper Spiral Heat Ray","Electromagnetic Field","Continent-Scale Destruction","Regeneration","Gravity-Bending Scales"],weakness:"None demonstrated",universe:"animation",tags:["evolved","planetary","anime"]},
+  {id:"T-030",name:"Void Ghidorah",alias:"Planet Eater / Cosmic Void",emoji:"🌀",align:"hostile",status:"unknown",threat:"omega",height:"beyond measurement",weight:"unknown",habitat:"Cosmic void / null dimensions",first:"Godzilla: The Planet Eater (2018)",origin:"Extradimensional entity summoned by the Exif cult, predating the universe",powers:["Reality Dissolution","Gravity Annihilation","Dimension Eating","Existence Nullification"],weakness:"Unknown",universe:"animation",tags:["cosmic","dimensional","nihilistic"]},
+  {id:"T-031",name:"Mechagodzilla (Kiryu)",alias:"Kiryu / Machine Dragon",emoji:"⚙️",align:"neutral",status:"dormant",threat:"high",height:"60m",weight:"40,000t",habitat:"JXSDF Hangar",first:"Godzilla Against Mechagodzilla (2002)",origin:"Built around the original 1954 Godzilla's bones. Contains the original's soul.",powers:["Absolute Zero Cannon","Maser Cannons","Rocket Boosters","Reinforced Skeleton","Soul Override"],weakness:"Original Godzilla's soul takes control",universe:"toho",tags:["mechanical","soul","bones"]},
+  {id:"T-032",name:"Megalon",alias:"God of the Seas / Seatopian God",emoji:"🪲",align:"hostile",status:"dormant",threat:"medium",height:"55m",weight:"40,000t",habitat:"Undersea Seatopia",first:"Godzilla vs. Megalon (1973)",origin:"Drill-armed beetle deity of the subterranean Seatopian civilization",powers:["Lightning Bolts","Drill Hands","Napalm Balls","Flight","Burrowing"],weakness:"Godzilla + Jet Jaguar team",universe:"toho",tags:["deity","beetle","drill"]},
+  {id:"T-033",name:"Titanosaurus",alias:"Aquatic Titan",emoji:"🦕",align:"neutral",status:"dormant",threat:"medium",height:"60m",weight:"70,000t",habitat:"Deep ocean",first:"Terror of Mechagodzilla (1975)",origin:"Ancient aquatic dinosaur manipulated by alien-controlled scientist",powers:["Tail Fan Wind Attack","Aquatic Speed","Physical Strength"],weakness:"Supersonic wave transmitter",universe:"toho",tags:["aquatic","dinosaur","controlled"]},
+  {id:"T-034",name:"Kamacuras",alias:"Giant Praying Mantis",emoji:"🦗",align:"hostile",status:"dormant",threat:"low",height:"50m",weight:"various",habitat:"Solgell Island",first:"Son of Godzilla (1967)",origin:"Giant mantis mutated by radioactive weather control experiments on Solgell Island",powers:["Flight","Camouflage","Scythe Claws","Speed"],weakness:"Godzilla's atomic breath",universe:"toho",tags:["insect","mantis","mutant"]},
+  {id:"T-035",name:"Kumonga",alias:"Giant Spider",emoji:"🕷️",align:"hostile",status:"dormant",threat:"medium",height:"45m",weight:"28,000t",habitat:"Solgell Island / Monster Island",first:"Son of Godzilla (1967)",origin:"Colossal spider native to Solgell Island",powers:["Webbing Spray","Venom Sting","Burrowing"],weakness:"Godzilla's atomic breath, fire",universe:"toho",tags:["arachnid","webbing","venomous"]},
+  {id:"T-036",name:"Minilla",alias:"Minya / Son of Godzilla",emoji:"🐣",align:"benevolent",status:"dormant",threat:"low",height:"10m (juvenile)",weight:"trivial",habitat:"Monster Island",first:"Son of Godzilla (1967)",origin:"Godzilla's adopted son, hatched from an egg on Solgell Island",powers:["Atomic Smoke Rings","Shrink Ability","Endurance"],weakness:"Almost everything",universe:"toho",tags:["juvenile","adopted","comedy"]},
+  {id:"T-037",name:"Ebirah",alias:"Horror of the Deep / Giant Lobster",emoji:"🦞",align:"hostile",status:"dormant",threat:"medium",height:"50m",weight:"unknown",habitat:"Pacific Ocean",first:"Ebirah, Horror of the Deep (1966)",origin:"Giant crustacean of the Pacific, drawn to nuclear contamination",powers:["Immense Claws","Aquatic Speed","Shell Armor"],weakness:"Godzilla's atomic breath",universe:"toho",tags:["crustacean","aquatic","lobster"]},
+  {id:"T-038",name:"Gabara",alias:"The Electric Demon",emoji:"⚡",align:"hostile",status:"dormant",threat:"low",height:"58m",weight:"23,000t",habitat:"Dream Island / Japan",first:"All Monsters Attack (1969)",origin:"A dream monster encountered by a young boy — whether real or imaginary is ambiguous",powers:["Electric Touch","Ogre Roar","Physical Brute Strength"],weakness:"Godzilla",universe:"toho",tags:["electric","bully","ambiguous"]},
+  {id:"T-039",name:"Jet Jaguar",alias:"Machine Hero",emoji:"🤺",align:"benevolent",status:"dormant",threat:"medium",height:"1.8m → 50m",weight:"150kg → unknown",habitat:"Japan",first:"Godzilla vs. Megalon (1973)",origin:"Robot created by inventor Goro Ibuki, capable of self-enlargement",powers:["Self-Enlargement","Flight","Superhuman Strength","Robot Durability","Programmed Combat"],weakness:"Extreme force",universe:"toho",tags:["robot","heroic","resize"]},
+  {id:"T-040",name:"MOGUERA",alias:"Mobile Operations Godzilla Universal Expert Robot Aero-type",emoji:"🚀",align:"benevolent",status:"dormant",threat:"medium",height:"75m",weight:"150,000t",habitat:"UN G-Force Command",first:"The Mysterians (1957)",origin:"Built by the United Nations G-Force anti-Godzilla division",powers:["Plasma Laser Cannon","Spiral Grenade Missiles","Maser Beam","Separation into two crafts","Drilling"],weakness:"Overwhelmed by SpaceGodzilla",universe:"toho",tags:["mecha","UN","weapon"]},
+  {id:"T-041",name:"Gorosaurus",alias:"The Allosaurid",emoji:"🦴",align:"neutral",status:"dormant",threat:"medium",height:"45m",weight:"8,000t",habitat:"Mondo Island / Monster Island",first:"King Kong Escapes (1967)",origin:"Giant allosaurid surviving on Mondo Island",powers:["Kangaroo Kick","Bite Force","Physical Strength"],weakness:"Godzilla",universe:"toho",tags:["dinosaur","prehistoric","terrestrial"]},
+  {id:"T-042",name:"Manda",alias:"Sea Serpent / Dragon of the Sea",emoji:"🐲",align:"hostile",status:"dormant",threat:"medium",height:"150m (length)",weight:"unknown",habitat:"Undersea / Muuan Kingdom",first:"Atragon (1963)",origin:"Ancient sea serpent, divine protector of the undersea Muuan civilization",powers:["Constriction","Aquatic Speed","Durable Scales"],weakness:"Freezing weapon (Atragon's maser)",universe:"toho",tags:["serpentine","aquatic","divine"]},
+  {id:"T-043",name:"Skullcrawler",alias:"Halu'a / The Death Dealers",emoji:"🐊",align:"hostile",status:"alive",threat:"high",height:"28m (large) / 5m (small)",weight:"unknown",habitat:"Skull Island / Underground",first:"Kong: Skull Island (2017)",origin:"Bipedal apex predators of Skull Island that killed Kong's family",powers:["Prehensile Tongue","Speed","Pack Hunting","Regeneration","Subterranean Emergence"],weakness:"Kong (Alpha status)",universe:"monsterverse",tags:["reptilian","pack","skull-island"]},
+  {id:"T-044",name:"Ion Dragon",alias:"Sky Dragon",emoji:"🐉",align:"neutral",status:"dormant",threat:"medium",height:"unknown",weight:"unknown",habitat:"Hollow Earth / Upper Atmosphere",first:"Monarch: Legacy of Monsters (2023)",origin:"Flying dragon-type Titan capable of ionizing the atmosphere",powers:["Bio-Electric Flight","Ion Storm Generation","Speed","Atmospheric Disruption"],weakness:"Unknown",universe:"monsterverse",tags:["flying","electric","hollow-earth"]},
+  {id:"T-045",name:"Salunga",alias:"Rodan of the Singular Point Universe",emoji:"🌪️",align:"hostile",status:"dormant",threat:"high",height:"unknown",weight:"unknown",habitat:"Upala Temple, India",first:"Godzilla Singular Point (2021)",origin:"Ancient Titan sealed beneath an Indian temple; sister species to Rodan",powers:["Prism Scaling","Armored Carapace","Shockwave Generation","Dimensional Breach"],weakness:"Archetype suppression",universe:"toho",tags:["anime","sealed","armored"]},
+  {id:"T-046",name:"Megaguirus",alias:"Queen of the Meganula",emoji:"🐛",align:"hostile",status:"deceased",threat:"high",height:"50m",weight:"12,000t",habitat:"Cretaceous period / 2000 Tokyo",first:"Godzilla vs. Megaguirus (2000)",origin:"Queen dragonfly mutated using energy stolen from Godzilla through a prehistoric swarm",powers:["Mach 4 Flight","Energy Drain Stinger","Swarm Control","Sonic Disruption"],weakness:"Godzilla's atomic breath",universe:"toho",tags:["insect","dragonfly","energy-drain"]},
+  {id:"T-047",name:"Baphomet",alias:"The Bat Titan",emoji:"🦇",align:"neutral",status:"dormant",threat:"medium",height:"unknown",weight:"unknown",habitat:"Northeast USA",first:"Godzilla: King of the Monsters (2019)",origin:"Winged bat-type Titan encountered after Ghidorah's awakening call",powers:["Echolocation","Night Flight","Ultrasonic Burst"],weakness:"Godzilla Alpha Call",universe:"monsterverse",tags:["flying","bat","nocturnal"]},
+  {id:"T-048",name:"Zilla",alias:"GINO / The American Godzilla",emoji:"🦎",align:"neutral",status:"deceased",threat:"medium",height:"60m",weight:"unknown",habitat:"New York / Various",first:"Godzilla (1998)",origin:"Marine iguana mutated by French nuclear testing in Polynesia",powers:["Speed","Burrowing","Asexual Reproduction","Leaping","Agility"],weakness:"Missiles, Godzilla (destroyed in Final Wars in seconds)",universe:"toho",tags:["iguana","mutant","speed"]},
+];
+
+const EPISODES = {
+  "Monarch: Legacy of Monsters": {
+    color:"#0099ff",
+    eps:[
+      {n:1,title:"Aftermath",air:"2023-11-17",titans:["Godzilla"],syn:"Present-day Tokyo. Cate Randa discovers her father survived — and had a secret family. Monarch's history begins to unravel."},
+      {n:2,title:"Departure",air:"2023-11-17",titans:["Godzilla","MUTO"],syn:"1950s: Lee Shaw and Keiko Miura's first Monarch mission. The past and present intercut as both stories converge on the same mystery."},
+      {n:3,title:"Secrets and Lies",air:"2023-11-24",titans:["Godzilla"],syn:"Cate and Kentaro follow their father's trail. Shaw reveals early Monarch discovered something beneath the Earth's surface."},
+      {n:4,title:"The Way Out",air:"2023-12-01",titans:["Frost Vark"],syn:"A new Titan encountered in Alaska. The Frost Vark attacks. Monarch containment protocols tested."},
+      {n:5,title:"The Hollow Earth",air:"2023-12-08",titans:["Godzilla","Ion Dragon"],syn:"Lee Shaw reveals the true nature of Hollow Earth — not just a cavern, but a parallel world sustaining Titan life."},
+      {n:6,title:"Terrifying Miracles",air:"2023-12-15",titans:["Godzilla"],syn:"Kazakhstan. Military operation. Old Monarch files implicate Lee Shaw in a catastrophic cover-up."},
+      {n:7,title:"Will the Real Monster Please Stand Up?",air:"2023-12-22",titans:["Godzilla","MUTO"],syn:"Monarch's founding ethics questioned. Is humanity the true threat? A Titan awakening triggers global panic."},
+      {n:8,title:"Parallels and Interiors",air:"2023-12-29",titans:["Godzilla"],syn:"Dual timeline collision. Lee Shaw's past decision echoes catastrophically in the present."},
+      {n:9,title:"Axis Mundi",air:"2024-01-05",titans:["Godzilla","Ion Dragon","MUTO"],syn:"The group reaches the Hollow Earth convergence point. Multiple Titans react. Shaw makes a desperate choice."},
+      {n:10,title:"Beyond Logic",air:"2024-01-12",titans:["Godzilla","Ion Dragon","Frost Vark"],syn:"Season finale. The portal crisis. Shaw's sacrifice. Cate faces Godzilla. Monarch's future uncertain."},
+    ]
+  },
+  "Godzilla Singular Point": {
+    color:"#00ccff",
+    eps:[
+      {n:1,title:"Terzett",air:"2021-03-25",titans:["Rodan (SP)"],syn:"Mei Kamino and Yun Arikawa independently encounter the same mysterious frequency. Rodan-type creatures appear in Nigashio."},
+      {n:2,title:"Noto",air:"2021-04-01",titans:["Rodan (SP)"],syn:"The Rodan creatures multiply. Military deployed. Yun discovers the frequency may be extra-temporal in nature."},
+      {n:3,title:"Suit",air:"2021-04-08",titans:["Rodan (SP)","Anguirus (SP)"],syn:"Anguirus spotted. The Red Dust — Archetype — begins spreading. Its connection to Titan biology explored."},
+      {n:4,title:"Kurenai",air:"2021-04-15",titans:["Anguirus (SP)"],syn:"Red Dust fills the city. Anguirus rolls into a ball and attacks. Physics-defying kaiju behavior noted."},
+      {n:5,title:"Gusoku",air:"2021-04-22",titans:["Rodan (SP)","Manda"],syn:"Manda emerges in the sea. Jet Jaguar prototype deployed. The Archetype theory deepens."},
+      {n:6,title:"Rozan",air:"2021-04-29",titans:["Rodan (SP)","Godzilla (SP)"],syn:"Godzilla detected off the coast. First appearance of the Singular Point Godzilla — still in ocean form."},
+      {n:7,title:"Hesei",air:"2021-05-06",titans:["Godzilla (SP)"],syn:"Godzilla grows. Evolves. The Archetype's role in his mutation clarified. Mei's theoretical work proves critical."},
+      {n:8,title:"Mahiru",air:"2021-05-13",titans:["Godzilla (SP)","Salunga"],syn:"Salunga breaks free from Upala Temple. Military overwhelmed. Jet Jaguar upgraded."},
+      {n:9,title:"Subdivided",air:"2021-05-20",titans:["Godzilla (SP)","Anguirus (SP)"],syn:"Godzilla reaches full terrestrial form. The Archetype becomes visible reality. Time loops implied."},
+      {n:10,title:"Phalanx",air:"2021-05-27",titans:["Godzilla (SP)"],syn:"Mass evacuation of Tokyo. Jet Jaguar battles Godzilla. The theoretical physics of kaiju destruction explained."},
+      {n:11,title:"New Legend",air:"2021-06-03",titans:["Godzilla (SP)","Salunga"],syn:"Singular Point — the source of the Archetype — located. Mei's simulation reaches its conclusion."},
+      {n:12,title:"Godzilla",air:"2021-06-10",titans:["Godzilla (SP)"],syn:"Godzilla reaches near-final form. Jet Jaguar's sacrifice enables the Orthogonal Diagonalizer. Crisis contained."},
+      {n:13,title:"The Beginning",air:"2021-06-24",titans:["Godzilla (SP)"],syn:"Resolution. The Singular Point closed. Aftermath. The price of survival. What lies beyond."},
+    ]
+  },
+  "Rebirth of Mothra Trilogy": {
+    color:"#ff88cc",
+    eps:[
+      {n:1,title:"Rebirth of Mothra",air:"1996-12-14",titans:["Mothra Leo","Desghidorah"],syn:"Mothra Leo hatches to battle the evil Desghidorah. The Elias sisters and the fate of the ancient Mothra lineage."},
+      {n:2,title:"Rebirth of Mothra II",air:"1997-12-13",titans:["Mothra Leo","Dagahra"],syn:"Leo gains new forms battling the oceanic polluter Dagahra. Underwater Mothra sequences."},
+      {n:3,title:"Rebirth of Mothra III",air:"1998-12-12",titans:["Mothra Leo","King Ghidorah"],syn:"Leo travels back to the Cretaceous era to stop King Ghidorah. Rainbow Mothra final form."},
+    ]
+  }
+};
+
+const RELATIONS = [
+  {from:"Godzilla",to:"King Ghidorah",type:"enemy",label:"Ancient rivals"},
+  {from:"Godzilla",to:"Mothra",type:"ally",label:"Symbiotic bond"},
+  {from:"Godzilla",to:"Kong",type:"ally",label:"Reluctant allies"},
+  {from:"Godzilla",to:"Mechagodzilla",type:"enemy",label:"Steel doppelgänger"},
+  {from:"Godzilla",to:"Rodan",type:"ally",label:"Alpha submission"},
+  {from:"Godzilla",to:"Anguirus",type:"ally",label:"Oldest friendship"},
+  {from:"Godzilla",to:"Destoroyah",type:"enemy",label:"Final battle"},
+  {from:"Godzilla",to:"SpaceGodzilla",type:"enemy",label:"Cosmic twin"},
+  {from:"Kong",to:"Skullcrawler",type:"enemy",label:"Family killer"},
+  {from:"Kong",to:"Skar King",type:"enemy",label:"Ancient tyrant"},
+  {from:"Kong",to:"Shimo",type:"ally",label:"Freed from slavery"},
+  {from:"Kong",to:"Mothra",type:"ally",label:"Co-defenders"},
+  {from:"Mothra",to:"Battra",type:"enemy",label:"Dark counterpart"},
+  {from:"Mothra",to:"King Ghidorah",type:"enemy",label:"Sacrifice"},
+  {from:"King Ghidorah",to:"Rodan",type:"alpha",label:"Temporary alpha"},
+  {from:"Skar King",to:"Shimo",type:"alpha",label:"Forced control"},
+  {from:"Biollante",to:"Godzilla",type:"neutral",label:"Daughter's soul"},
+  {from:"Mechagodzilla",to:"King Ghidorah",type:"neutral",label:"Skull interface"},
+  {from:"Gigan",to:"King Ghidorah",type:"ally",label:"Alien partners"},
+  {from:"Gigan",to:"Anguirus",type:"enemy",label:"Recurring clash"},
+];
+
+const TIMELINE_EVENTS = [
+  {year:"251 Million BC",type:"toho",cat:"discovery",color:"#ff4444",title:"The Great Extinction",desc:"Titans emerge as Earth's immune system. King Ghidorah's species visits Earth, devastating ecosystems. Godzilla's ancestors fight back."},
+  {year:"65 Million BC",type:"both",cat:"discovery",color:"#ff6600",title:"End of the Dinosaurs",desc:"Mass extinction event. Godzilla's ancestor species survives by retreating to radiation-rich ocean depths. Kong's ancestors flourish on Hollow Earth."},
+  {year:"~10,000 BC",type:"monsterverse",cat:"monarch",color:"#0099ff",title:"Ancient War / Hollow Earth Kingdom",desc:"Titanus Kong species rules Hollow Earth. Ancient civilization ('Iwi') lives in harmony with Kong's ancestors on Skull Island. Skar King banished to deep Subterranea."},
+  {year:"1943",type:"monsterverse",cat:"monarch",color:"#e8b400",title:"Godzilla vs. Massive Unidentified Terrestrial Organism (U.S. Navy)",desc:"US submarine crew encounters Godzilla in the Pacific. First modern documented sighting. Information classified by U.S. Department of Defense."},
+  {year:"1945",type:"toho",cat:"discovery",color:"#ff4444",title:"First Contact — Bikini Atoll Testing",desc:"Nuclear testing in the Pacific wakes Godzilla. The connection between nuclear radiation and Titan activation is first theorized."},
+  {year:"1946",type:"monsterverse",cat:"monarch",color:"#e8b400",title:"Monarch Founded",desc:"Colonel Lee Shaw, Dr. Keiko Miura, and Bill Randa establish a covert scientific organization to study Massive Unidentified Terrestrial Organisms (MUTOs)."},
+  {year:"1954",type:"toho",cat:"discovery",color:"#ff4444",title:"Godzilla Attacks Tokyo",desc:"Godzilla first attacks Tokyo. Massive casualties. Dr. Serizawa deploys the Oxygen Destroyer to kill Godzilla. The weapon's radiation lingers in Tokyo Bay — eventually spawning Destoroyah in 1995."},
+  {year:"1973",type:"monsterverse",cat:"monarch",color:"#e8b400",title:"Skull Island Expedition",desc:"Monarch and Landsat team reach Skull Island. Kong first encountered by modern humans. Seismic weapons lure Skull Crawlers. Monarch establishes perimeter."},
+  {year:"1983",type:"monsterverse",cat:"monarch",color:"#e8b400",title:"MUTO Prime Awakens",desc:"Monarch discovers MUTO egg sac in the Philippines. Janjira nuclear plant incident planned by MUTO. Joe Brody's wife killed. Site quarantined."},
+  {year:"1989",type:"toho",cat:"discovery",color:"#ff6600",title:"Biollante Incident",desc:"Dr. Genichiro Shiragami splices Godzilla's cells with his deceased daughter's DNA and a rose. Biollante emerges. The G-Project's unintended consequences."},
+  {year:"1995",type:"toho",cat:"discovery",color:"#ff4444",title:"Godzilla's Death (Heisei)",desc:"Godzilla's heart melts down. Destoroyah — born from the original Oxygen Destroyer — delivers the killing blow. Godzilla Junior absorbs the radiation and inherits the mantle."},
+  {year:"2014",type:"monsterverse",cat:"discovery",color:"#0099ff",title:"MUTO Awakening / Godzilla Returns",desc:"MUTOs emerge. Godzilla surfaces to hunt them. San Francisco battle. Godzilla wins and returns to the ocean. Monarch's existence becomes public knowledge."},
+  {year:"2017",type:"monsterverse",cat:"discovery",color:"#0099ff",title:"Kong: Skull Island Expedition",desc:"Geological survey of Skull Island reveals Hollow Earth access point. Kong confirmed as Alpha. Skull Crawlers partially contained."},
+  {year:"2019",type:"monsterverse",cat:"discovery",color:"#0099ff",title:"Titan Awakening / Alpha War",desc:"Eco-terrorists release all Titans. King Ghidorah seizes Alpha status. Godzilla defeats Ghidorah in Boston. Mothra sacrifices herself. Godzilla declared Alpha."},
+  {year:"2020",type:"monsterverse",cat:"discovery",color:"#0099ff",title:"Battle for Alpha / Hollow Earth Discovery",desc:"Godzilla attacks Apex Cybernetics. Kong travels to Hollow Earth. Mechagodzilla activated and goes rogue. Kong acquires axe. Godzilla and Kong defeat Mechagodzilla together."},
+  {year:"2023",type:"monsterverse",cat:"monarch",color:"#e8b400",title:"Monarch: Legacy Investigation",desc:"Randa family uncovers the original Monarch mission. Lee Shaw resurfaces. Hollow Earth portals destabilize. Godzilla emerges globally."},
+  {year:"2024",type:"monsterverse",cat:"discovery",color:"#0099ff",title:"Skar King Uprising / Shimo Awakens",desc:"Skar King leads enslaved Titans from deep Hollow Earth. Shimo — the frozen Titan — weaponized against surface world. Godzilla and Kong team up to defeat the Skar King."},
+  {year:"2016",type:"toho",cat:"discovery",color:"#00ff88",title:"Shin Godzilla Emergence",desc:"An unknown creature evolves in Tokyo Bay. Rapid, uncontrolled evolution in front of the cameras. Japan paralysed by bureaucratic inaction. Frozen by the Yaguchi formula."},
+  {year:"2023",type:"toho",cat:"discovery",color:"#00ff88",title:"Godzilla Minus One",desc:"Post-WWII Japan, 1945–47. Godzilla attacks Ginza. Survivors form a civilian operation. Koichi Shikishima faces both survivor's guilt and the apex predator."},
+  {year:"2030s (approx)",type:"animation",cat:"discovery",color:"#aa44ff",title:"Humanity Abandons Earth",desc:"Anime trilogy. Godzilla has dominated Earth for 20 years. Humanity flees on a colony ship. Earth becomes a Godzilla biome."},
+  {year:"22,000 AD",type:"animation",cat:"discovery",color:"#aa44ff",title:"Godzilla Earth",desc:"Humanity returns to find a 300m evolved Godzilla Earth that has fused with the planet's electromagnetic field. The final confrontation between humanity and its replacement."},
+];
+
+// ═══════════════════════════════════════════════════════════
+// PAGE NAV
+// ═══════════════════════════════════════════════════════════
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  const page = document.getElementById('page-'+id);
+  if (page) page.classList.add('active');
+  const btns = document.querySelectorAll('.nav-btn');
+  btns.forEach(b=>{ if(b.getAttribute('onclick')?.includes(id)) b.classList.add('active'); });
+  if(id==='size') renderSize('all');
+  if(id==='relations') setTimeout(renderRelWeb,100);
+  window.scrollTo(0,0);
+}
+
+// ═══════════════════════════════════════════════════════════
+// WATCH ORDER
+// ═══════════════════════════════════════════════════════════
+let woMode='all', woEra='all';
+
+function renderWO(items) {
+  const list = document.getElementById('wo-list');
+  list.innerHTML = items.map((m,i)=>`
+    <div class="tli" data-idx="${i}" onclick="toggleWO(${i})">
+      <div class="tli-num">${String(m.n).padStart(2,'0')}</div>
+      <div class="tli-icon">${m.type==='film'?'🎬':'📺'}</div>
+      <div class="tli-body">
+        <div class="tli-title">${m.title}</div>
+        <div class="tli-meta">
+          <span class="tli-year">${m.year}</span>
+          <span class="epill-sm e-${m.era}">${m.era.toUpperCase()}</span>
+          <span class="tli-year">${m.dur}</span>
+        </div>
+        <div class="tchips">${m.titans.slice(0,5).map(t=>`<span class="tchip">${t}</span>`).join('')}${m.titans.length>5?`<span class="tchip">+${m.titans.length-5}</span>`:''}</div>
+        <div class="tli-expand" id="wo-exp-${i}">
+          <div class="exp-grid">
+            <div class="exp-f"><label>Director</label><span>${m.dir}</span></div>
+            <div class="exp-f"><label>Streaming</label><span>${m.platform}</span></div>
+            <div class="exp-f"><label>Runtime</label><span>${m.dur}</span></div>
+            <div class="exp-f"><label>Universe</label><span>${m.universe.toUpperCase()}</span></div>
+          </div>
+          <div class="exp-syn">${m.syn}</div>
+        </div>
+      </div>
+      <div class="tli-score">
+        <div class="score-num">★${m.score}</div>
+        <div class="score-plat">${m.platform}</div>
+      </div>
+    </div>
+  `).join('');
+  document.getElementById('wo-count').textContent = items.length+' ENTRIES';
+}
+
+function toggleWO(i) {
+  const exp = document.getElementById('wo-exp-'+i);
+  const item = exp.closest('.tli');
+  const was = exp.classList.contains('show');
+  document.querySelectorAll('.tli-expand.show').forEach(e=>{e.classList.remove('show');e.closest('.tli').classList.remove('open');});
+  if(!was){exp.classList.add('show');item.classList.add('open');}
+}
+
+function setWO(btn,mode) {
+  document.querySelectorAll('#page-watchorder .tog').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  woMode=mode; applyWO();
+}
+function setEra(el,era) {
+  document.querySelectorAll('.epill').forEach(e=>e.classList.remove('on'));
+  el.classList.add('on');
+  woEra=era; applyWO();
+}
+function applyWO() {
+  let items = [...MOVIES];
+  if(woMode==='monsterverse') items=items.filter(m=>m.universe==='monsterverse');
+  else if(woMode==='toho') items=items.filter(m=>m.universe==='toho');
+  else if(woMode==='animation') items=items.filter(m=>m.universe==='animation');
+  if(woEra!=='all') items=items.filter(m=>m.era===woEra);
+  renderWO(items);
+}
+
+// ═══════════════════════════════════════════════════════════
+// TITANDEX
+// ═══════════════════════════════════════════════════════════
+function renderTdex(list) {
+  const grid = document.getElementById('tdex-grid');
+  grid.innerHTML = list.map(t=>{
+    const pc = Math.min(t.powers.length,10);
+    const bars = Array.from({length:10},(_,i)=>`<div class="pseg ${i<pc?'on':''}"></div>`).join('');
+    return `<div class="tcard" data-alignment="${t.align}" data-status="${t.status}" data-threat="${t.threat}" onclick="openTitan('${t.id}')">
+      <div class="tc-top"><span class="tc-id">${t.id}</span><span class="threat-b tl-${t.threat}">${t.threat.toUpperCase()}</span></div>
+      <div class="tc-emoji">${t.emoji}</div>
+      <div class="tc-name">${t.name}</div>
+      <div class="tc-alias">${t.alias}</div>
+      <div class="tc-mini">
+        <div class="tcm"><label>Alignment</label><span class="al-${t.align}">${t.align.toUpperCase()}</span></div>
+        <div class="tcm"><label>Status</label><span class="st-${t.status}">${t.status.toUpperCase()}</span></div>
+        <div class="tcm"><label>Height</label><span>${t.height}</span></div>
+        <div class="tcm"><label>First Seen</label><span>${t.first.match(/\((\d{4})\)/)?.[1]||'—'}</span></div>
+      </div>
+      <div class="pbar">${bars}</div>
+      <div class="tc-hint">// TAP FOR FULL PROFILE //</div>
+    </div>`;
+  }).join('');
+  document.getElementById('tdex-count').textContent = list.length+' TITANS';
+}
+
+function filterTdex() {
+  const q = document.getElementById('tdex-search').value.toLowerCase();
+  const al = document.getElementById('tdex-align').value;
+  const st = document.getElementById('tdex-status').value;
+  const th = document.getElementById('tdex-threat').value;
+  const un = document.getElementById('tdex-era').value;
+  renderTdex(TITANS.filter(t=>{
+    const mq=!q||[t.name,t.alias,t.origin,...t.powers,...(t.tags||[])].join(' ').toLowerCase().includes(q);
+    const ma=al==='all'||t.align===al;
+    const ms=st==='all'||t.status===st;
+    const mt=th==='all'||t.threat===th;
+    const mu=un==='all'||t.universe===un||t.universe==='both';
+    return mq&&ma&&ms&&mt&&mu;
+  }));
+}
+
+function openTitan(id) {
+  const t = TITANS.find(x=>x.id===id);
+  if(!t) return;
+  document.getElementById('modal-body').innerHTML = `
+    <div class="mhead">
+      <div class="mhead-info">
+        <div class="mid">${t.id} — MONARCH TITAN PROFILE</div>
+        <div class="mname">${t.name}</div>
+        <div class="malias">${t.alias}</div>
+      </div>
+      <button class="mclose" onclick="closeModal()">✕</button>
+    </div>
+    <div class="mbody">
+      <div class="mleft">
+        <div class="mdisp">
+          <div class="memoji">${t.emoji}</div>
+          <div class="mbadges">
+            <span class="threat-b tl-${t.threat}">${t.threat.toUpperCase()} THREAT</span>
+            <span class="threat-b" style="border-color:var(--al-color,#555);color:var(--al-color,#aaa);" class="al-${t.align}">${t.align.toUpperCase()}</span>
+            <span class="threat-b st-${t.status}">${t.status.toUpperCase()}</span>
+          </div>
+        </div>
+        <div class="mstats">
+          <div class="mstat-row"><label>Universe</label><span class="v">${t.universe.toUpperCase()}</span></div>
+          <div class="mstat-row"><label>Height</label><span class="v">${t.height}</span></div>
+          <div class="mstat-row"><label>Weight</label><span class="v">${t.weight}</span></div>
+        </div>
+      </div>
+      <div class="mright">
+        <div class="mstats">
+          <div class="mstat-row"><label>Habitat</label><span class="v">${t.habitat}</span></div>
+          <div class="mstat-row"><label>First Appeared</label><span class="v">${t.first}</span></div>
+          <div class="mstat-row"><label>Origin</label><span class="v" style="font-size:0.82rem;">${t.origin}</span></div>
+          ${t.weakness?`<div class="mstat-row"><label>Weakness</label><span class="v" style="color:var(--lava);font-size:0.82rem;">${t.weakness}</span></div>`:''}
+        </div>
+      </div>
+      <div class="mblock">
+        <div class="mblock-title">ABILITIES & POWERS</div>
+        <div class="tags">${t.powers.map(p=>`<span class="ptag">${p}</span>`).join('')}</div>
+      </div>
+      <div class="mblock">
+        <div class="mblock-title">APPEARS IN</div>
+        <div class="tags">${MOVIES.filter(m=>m.titans.some(tn=>tn.toLowerCase().includes(t.name.toLowerCase().split(' ')[0]))).map(m=>`<span class="atag">${m.title} (${m.year})</span>`).join('')||'<span style="color:var(--muted);font-size:0.8rem;">Data being compiled...</span>'}</div>
+      </div>
+      ${t.tags?`<div class="mblock"><div class="mblock-title">CLASSIFICATION TAGS</div><div class="tags">${t.tags.map(g=>`<span class="wtag">${g}</span>`).join('')}</div></div>`:''}
+    </div>`;
+  document.getElementById('titan-modal').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+
+function closeModal(e) {
+  if(!e||e.target===document.getElementById('titan-modal')){
+    document.getElementById('titan-modal').classList.remove('open');
+    document.body.style.overflow='';
+  }
+}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
+
+// ═══════════════════════════════════════════════════════════
+// EPISODE TRACKER
+// ═══════════════════════════════════════════════════════════
+let currentShow = Object.keys(EPISODES)[0];
+
+function renderShowTabs() {
+  const tabs = document.getElementById('show-tabs');
+  tabs.innerHTML = Object.keys(EPISODES).map(s=>`<button class="stab${s===currentShow?' on':''}" onclick="setShow('${s}')">${s}</button>`).join('');
+}
+
+function setShow(s) {
+  currentShow=s; renderShowTabs(); renderEps();
+}
+
+function renderEps() {
+  const show = EPISODES[currentShow];
+  const list = document.getElementById('ep-list');
+  list.innerHTML = show.eps.map((ep,i)=>`
+    <div class="ep-item" onclick="toggleEp(${i})">
+      <div class="ep-num">${String(ep.n).padStart(2,'0')}</div>
+      <div>
+        <div class="ep-title">${ep.title}</div>
+        <div class="ep-sub">${ep.air} · ${currentShow}</div>
+        <div class="ep-titans">${ep.titans.map(t=>`<span class="ep-titan-tag">${t}</span>`).join('')}</div>
+        <div class="ep-expand" id="ep-exp-${i}">${ep.syn}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function toggleEp(i) {
+  const exp = document.getElementById('ep-exp-'+i);
+  const item = exp.closest('.ep-item');
+  const was = exp.classList.contains('show');
+  document.querySelectorAll('.ep-expand.show').forEach(e=>{e.classList.remove('show');e.closest('.ep-item').classList.remove('open');});
+  if(!was){exp.classList.add('show');item.classList.add('open');}
+}
+
+// ═══════════════════════════════════════════════════════════
+// SIZE CHART
+// ═══════════════════════════════════════════════════════════
+const SIZE_DATA = [
+  {name:"Void Ghidorah",h:999,unit:"∞",universe:"animation",flying:false},
+  {name:"Godzilla Earth",h:300,unit:"300m",universe:"animation",flying:false},
+  {name:"King Ghidorah",h:158,unit:"158m",universe:"toho",flying:true},
+  {name:"Manda",h:150,unit:"150m (length)",universe:"toho",flying:false},
+  {name:"Shimo",h:150,unit:"~150m",universe:"monsterverse",flying:false},
+  {name:"Mechagodzilla",h:120,unit:"120m",universe:"both",flying:false},
+  {name:"Destoroyah",h:120,unit:"120m",universe:"toho",flying:true},
+  {name:"Biollante",h:120,unit:"120m",universe:"toho",flying:false},
+  {name:"SpaceGodzilla",h:120,unit:"120m",universe:"toho",flying:false},
+  {name:"Godzilla (MV)",h:119,unit:"119.8m",universe:"monsterverse",flying:false},
+  {name:"Shin Godzilla",h:118,unit:"118.5m",universe:"toho",flying:false},
+  {name:"Kong (GxK)",h:103,unit:"103m",universe:"monsterverse",flying:false},
+  {name:"Godzilla 1954",h:50,unit:"50m",universe:"toho",flying:false},
+  {name:"Battra",h:25,unit:"25m body/180m span",universe:"toho",flying:true},
+  {name:"Mothra",h:25,unit:"25m body/244m span",universe:"both",flying:true},
+  {name:"Rodan",h:46,unit:"46m body",universe:"both",flying:true},
+  {name:"Gigan",h:65,unit:"65m",universe:"toho",flying:false},
+  {name:"Baragon",h:30,unit:"30m",universe:"toho",flying:false},
+  {name:"Jet Jaguar",h:50,unit:"50m (giant form)",universe:"toho",flying:true},
+  {name:"Zilla",h:60,unit:"60m",universe:"toho",flying:false},
+];
+
+function renderSize(filter) {
+  let data = [...SIZE_DATA];
+  if(filter==='monsterverse') data=data.filter(d=>d.universe==='monsterverse'||d.universe==='both');
+  else if(filter==='toho') data=data.filter(d=>d.universe==='toho'||d.universe==='both');
+  else if(filter==='flying') data=data.filter(d=>d.flying);
+  data = data.filter(d=>d.h<900).sort((a,b)=>b.h-a.h).slice(0,16);
+  const maxH = Math.max(...data.map(d=>d.h));
+  const scale = document.getElementById('size-scale');
+  scale.innerHTML = data.map(d=>{
+    const pct = Math.max(3,(d.h/maxH)*100);
+    return `<div class="sbar-col">
+      <div class="sbar-val">${d.unit}</div>
+      <div class="sbar" style="height:${pct}%" title="${d.name}: ${d.unit}">
+        <div class="sbar-inner"></div>
+      </div>
+      <div class="sbar-label">${d.name}</div>
+    </div>`;
+  }).join('');
+  const legend = document.getElementById('size-legend');
+  legend.innerHTML = data.map(d=>`<div class="sleg-item"><div class="sleg-bar"></div><div class="sleg-info">${d.name} — <span>${d.unit}</span></div></div>`).join('');
+}
+
+function setSizeFilter(btn,f) {
+  document.querySelectorAll('#page-size .tog').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  renderSize(f);
+}
+
+// ═══════════════════════════════════════════════════════════
+// RELATIONSHIP WEB (Canvas)
+// ═══════════════════════════════════════════════════════════
+let relNodes=[], relDragging=null, relMouse={x:0,y:0}, relAnimating=false;
+
+function renderRelWeb() {
+  const canvas = document.getElementById('rel-canvas');
+  if(!canvas) return;
+  const W=canvas.offsetWidth, H=canvas.offsetHeight;
+  canvas.width=W; canvas.height=H;
+  const ctx=canvas.getContext('2d');
+
+  // Build unique nodes
+  const names = [...new Set(RELATIONS.flatMap(r=>[r.from,r.to]))];
+  const cx=W/2, cy=H/2, R=Math.min(W,H)*0.36;
+  
+  relNodes = names.map((n,i)=>{
+    const angle=(i/names.length)*Math.PI*2 - Math.PI/2;
+    const t = TITANS.find(tt=>tt.name===n);
+    return {
+      name:n, emoji:t?t.emoji:'❓',
+      x:cx+Math.cos(angle)*R*(0.7+Math.random()*0.3),
+      y:cy+Math.sin(angle)*R*(0.7+Math.random()*0.3),
+      vx:0, vy:0, r:28
+    };
+  });
+
+  // Physics simulation
+  function simulate() {
+    for(let i=0;i<relNodes.length;i++){
+      for(let j=i+1;j<relNodes.length;j++){
+        const dx=relNodes[j].x-relNodes[i].x, dy=relNodes[j].y-relNodes[i].y;
+        const dist=Math.sqrt(dx*dx+dy*dy)||1;
+        const force=8000/(dist*dist);
+        relNodes[i].vx-=dx/dist*force*0.016;
+        relNodes[i].vy-=dy/dist*force*0.016;
+        relNodes[j].vx+=dx/dist*force*0.016;
+        relNodes[j].vy+=dy/dist*force*0.016;
+      }
+    }
+    RELATIONS.forEach(r=>{
+      const a=relNodes.find(n=>n.name===r.from), b=relNodes.find(n=>n.name===r.to);
+      if(!a||!b) return;
+      const dx=b.x-a.x, dy=b.y-a.y;
+      const dist=Math.sqrt(dx*dx+dy*dy)||1;
+      const target=140;
+      const f=(dist-target)*0.02;
+      a.vx+=dx/dist*f; a.vy+=dy/dist*f;
+      b.vx-=dx/dist*f; b.vy-=dy/dist*f;
+    });
+    relNodes.forEach(n=>{
+      if(n===relDragging) return;
+      n.x+=n.vx; n.y+=n.vy;
+      n.vx*=0.85; n.vy*=0.85;
+      n.x=Math.max(n.r,Math.min(W-n.r,n.x));
+      n.y=Math.max(n.r,Math.min(H-n.r,n.y));
+    });
+  }
+
+  const typeColors = {ally:'#00ff88',enemy:'#ff4d00',alpha:'#e8b400',neutral:'#00aaff'};
+
+  function draw() {
+    ctx.clearRect(0,0,W,H);
+    // Edges
+    RELATIONS.forEach(r=>{
+      const a=relNodes.find(n=>n.name===r.from), b=relNodes.find(n=>n.name===r.to);
+      if(!a||!b) return;
+      ctx.beginPath();
+      ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y);
+      ctx.strokeStyle=typeColors[r.type]||'#555';
+      ctx.lineWidth=r.type==='ally'?2:1.5;
+      ctx.globalAlpha=0.45;
+      ctx.stroke();
+      ctx.globalAlpha=1;
+    });
+    // Nodes
+    relNodes.forEach(n=>{
+      ctx.beginPath();
+      ctx.arc(n.x,n.y,n.r,0,Math.PI*2);
+      ctx.fillStyle='#0a1520';
+      ctx.fill();
+      ctx.strokeStyle='#1e3a55';
+      ctx.lineWidth=1.5;
+      ctx.stroke();
+      ctx.font=`${n.r*0.9}px serif`;
+      ctx.textAlign='center';
+      ctx.textBaseline='middle';
+      ctx.fillText(n.emoji,n.x,n.y);
+      ctx.font='500 10px Rajdhani,sans-serif';
+      ctx.fillStyle='#c0d8e8';
+      ctx.fillText(n.name,n.x,n.y+n.r+11);
+    });
+  }
+
+  function loop() {
+    if(!relAnimating) return;
+    simulate(); draw();
+    requestAnimationFrame(loop);
+  }
+
+  // Drag
+  canvas.onmousedown=e=>{
+    const rect=canvas.getBoundingClientRect();
+    const mx=e.clientX-rect.left, my=e.clientY-rect.top;
+    relDragging=relNodes.find(n=>Math.hypot(n.x-mx,n.y-my)<n.r+4)||null;
+  };
+  canvas.onmousemove=e=>{
+    if(!relDragging) return;
+    const rect=canvas.getBoundingClientRect();
+    relDragging.x=e.clientX-rect.left;
+    relDragging.y=e.clientY-rect.top;
+    relDragging.vx=0; relDragging.vy=0;
+  };
+  canvas.onmouseup=()=>{relDragging=null;};
+
+  relAnimating=true;
+  loop();
+}
+
+// ═══════════════════════════════════════════════════════════
+// BATTLE SIMULATOR
+// ═══════════════════════════════════════════════════════════
+let simFighter={1:null,2:null}, pickerSlot=null;
+
+function renderPickerGrid(filter='') {
+  const grid = document.getElementById('pick-grid');
+  const list = TITANS.filter(t=>!filter||t.name.toLowerCase().includes(filter));
+  grid.innerHTML = list.map(t=>`<div class="pick-card" onclick="selectFighter('${t.id}')">
+    <div class="pick-emoji">${t.emoji}</div>
+    <div class="pick-name">${t.name}</div>
+  </div>`).join('');
+}
+
+function openPicker(slot) {
+  pickerSlot=slot;
+  const picker=document.getElementById('sim-picker');
+  document.getElementById('picker-label').textContent=`SELECT FIGHTER ${slot}`;
+  picker.classList.add('show');
+  renderPickerGrid();
+  document.getElementById('picker-search').value='';
+}
+
+function filterPicker() {
+  renderPickerGrid(document.getElementById('picker-search').value.toLowerCase());
+}
+
+function selectFighter(id) {
+  const t=TITANS.find(x=>x.id===id);
+  simFighter[pickerSlot]=t;
+  document.getElementById('sim-picker').classList.remove('show');
+  updateSimSlots();
+}
+
+function updateSimSlots() {
+  [1,2].forEach(s=>{
+    const slot=document.getElementById('slot'+s);
+    const t=simFighter[s];
+    slot.innerHTML=t?`<div class="sim-emoji-big">${t.emoji}</div><div class="sim-fname">${t.name}</div>
+    <div style="font-family:'Share Tech Mono',monospace;font-size:0.6rem;color:var(--muted);letter-spacing:2px;margin-top:0.3rem;">${t.alias.split('/')[0].trim()}</div>
+    <div style="margin-top:0.5rem;"><span class="threat-b tl-${t.threat}">${t.threat.toUpperCase()}</span></div>`:
+    `<div class="sim-placeholder">+ SELECT TITAN ${s}</div>`;
+    slot.classList.toggle('selected',!!t);
+  });
+  document.getElementById('fight-btn').disabled=!(simFighter[1]&&simFighter[2]);
+  document.getElementById('sim-result').classList.remove('show');
+}
+
+function runSim() {
+  const a=simFighter[1], b=simFighter[2];
+  if(!a||!b) return;
+  // Scoring system
+  const threatScore={low:1,medium:3,high:6,omega:10};
+  const alignBonus={benevolent:1,neutral:0,alpha:1,hostile:-0.5,unknown:0};
+  const statusPenalty={alive:0,dormant:-2,deceased:-10,unknown:-1};
+  
+  function score(t) {
+    let s=threatScore[t.threat]||5;
+    s+=t.powers.length*0.3;
+    s+=alignBonus[t.align]||0;
+    s+=statusPenalty[t.status]||0;
+    s+=Math.random()*2; // variance
+    return s;
+  }
+  
+  const sa=score(a), sb=score(b);
+  const winner=sa>=sb?a:b;
+  const loser=sa>=sb?b:a;
+  const margin=Math.abs(sa-sb);
+  const close=margin<2;
+  
+  const analyses=[
+    `${winner.name}'s ${winner.powers[0]} proves decisive, overpowering ${loser.name}'s defenses.`,
+    `The battle rages across multiple terrains. ${winner.name} endures. ${loser.name} ultimately withdraws.`,
+    `${winner.name}'s superior ${winner.threat === 'omega'?'omega-level energy output':'combat adaptability'} turns the tide.`,
+    `${loser.name} staggers ${winner.name} early — but ${winner.name}'s regeneration and ${winner.powers[Math.floor(Math.random()*winner.powers.length)]} prove insurmountable.`,
+  ];
+  const analysis=analyses[Math.floor(Math.random()*analyses.length)];
+
+  const statRows=[
+    {label:"THREAT",a:a.threat.toUpperCase(),b:b.threat.toUpperCase(),aWin:threatScore[a.threat]>=threatScore[b.threat]},
+    {label:"ABILITIES",a:a.powers.length,b:b.powers.length,aWin:a.powers.length>=b.powers.length},
+    {label:"STATUS",a:a.status.toUpperCase(),b:b.status.toUpperCase(),aWin:statusPenalty[a.status]>=statusPenalty[b.status]},
+  ];
+
+  const res=document.getElementById('sim-result');
+  res.innerHTML=`
+    <div class="res-title">${close?'CLOSE BATTLE':'DECISIVE VICTORY'}</div>
+    <div style="text-align:center;margin-bottom:1rem;">
+      <div style="font-size:3rem;">${winner.emoji}</div>
+      <div class="res-winner-name">${winner.name}</div>
+      <div style="font-family:'Share Tech Mono',monospace;font-size:0.65rem;color:var(--nuclear);letter-spacing:3px;margin-top:0.2rem;">VICTOR</div>
+    </div>
+    <div class="res-analysis">${analysis}${close?' This was an exceptionally close contest — a rematch could easily go the other way.':''}</div>
+    <div class="stat-compare" style="margin-top:1.5rem;">
+      ${statRows.map(r=>`
+        <div class="sc-stat left ${r.aWin?'sc-win':'sc-lose'}">${r.a}</div>
+        <div class="sc-label">${r.label}</div>
+        <div class="sc-stat right ${!r.aWin?'sc-win':'sc-lose'}">${r.b}</div>
+      `).join('')}
+    </div>
+    <div style="display:flex;justify-content:space-between;padding-top:1rem;border-top:1px solid var(--border);margin-top:1rem;">
+      <div style="font-family:'Share Tech Mono',monospace;font-size:0.65rem;color:var(--muted);">${a.name}</div>
+      <div style="font-family:'Share Tech Mono',monospace;font-size:0.65rem;color:var(--muted);">${b.name}</div>
+    </div>
+  `;
+  res.classList.add('show');
+}
+
+// ═══════════════════════════════════════════════════════════
+// MONARCH TIMELINE
+// ═══════════════════════════════════════════════════════════
+let tlFilter='all';
+
+function renderTimeline(filter) {
+  let events=[...TIMELINE_EVENTS];
+  if(filter==='monsterverse') events=events.filter(e=>e.type==='monsterverse'||e.type==='both');
+  else if(filter==='toho') events=events.filter(e=>e.type==='toho'||e.type==='both');
+  else if(filter==='discovery') events=events.filter(e=>e.cat==='discovery');
+  else if(filter==='monarch') events=events.filter(e=>e.cat==='monarch');
+  const wrap=document.getElementById('tl-wrap');
+  wrap.innerHTML=events.map(e=>`
+    <div class="tlev">
+      <div class="tlev-year">${e.year}</div>
+      <div class="tlev-content" style="border-left-color:${e.color}">
+        <div class="tlev-title">${e.title}</div>
+        <div class="tlev-desc">${e.desc}</div>
+        <div class="tlev-tags">
+          <span class="tlev-tag" style="border-color:${e.color};color:${e.color}">${e.type.toUpperCase()}</span>
+          <span class="tlev-tag" style="border-color:var(--muted);color:var(--muted)">${e.cat.toUpperCase()}</span>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function setTLFilter(btn,f) {
+  document.querySelectorAll('#page-timeline .tog').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  renderTimeline(f);
+}
+
+// ═══════════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════════
+renderWO(MOVIES);
+renderTdex(TITANS);
+renderShowTabs();
+renderEps();
+renderTimeline('all');
+renderPickerGrid();
+
+// Stop rel web animation when leaving page
+document.querySelectorAll('.nav-btn').forEach(b=>{
+  b.addEventListener('click',()=>{ relAnimating=false; });
+});
+</script>
+</body>
+</html>
+
