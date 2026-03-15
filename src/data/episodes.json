@@ -1,43 +1,55 @@
-{
-  "Monarch: Legacy of Monsters": {
-    "color":"#0099ff",
-    "eps":[
-      {"n":1,"title":"Aftermath","air":"2023-11-17","titans":["Godzilla"],"syn":"Present-day Tokyo. Cate Randa discovers her father survived — and had a secret family. Monarch's history begins to unravel."},
-      {"n":2,"title":"Departure","air":"2023-11-17","titans":["Godzilla","MUTO"],"syn":"1950s: Lee Shaw and Keiko Miura's first Monarch mission. The past and present intercut as both stories converge on the same mystery."},
-      {"n":3,"title":"Secrets and Lies","air":"2023-11-24","titans":["Godzilla"],"syn":"Cate and Kentaro follow their father's trail. Shaw reveals early Monarch discovered something beneath the Earth's surface."},
-      {"n":4,"title":"The Way Out","air":"2023-12-01","titans":["Frost Vark"],"syn":"A new Titan encountered in Alaska. The Frost Vark attacks. Monarch containment protocols tested."},
-      {"n":5,"title":"The Hollow Earth","air":"2023-12-08","titans":["Godzilla","Ion Dragon"],"syn":"Lee Shaw reveals the true nature of Hollow Earth — not just a cavern, but a parallel world sustaining Titan life."},
-      {"n":6,"title":"Terrifying Miracles","air":"2023-12-15","titans":["Godzilla"],"syn":"Kazakhstan. Military operation. Old Monarch files implicate Lee Shaw in a catastrophic cover-up."},
-      {"n":7,"title":"Will the Real Monster Please Stand Up?","air":"2023-12-22","titans":["Godzilla","MUTO"],"syn":"Monarch's founding ethics questioned. Is humanity the true threat? A Titan awakening triggers global panic."},
-      {"n":8,"title":"Parallels and Interiors","air":"2023-12-29","titans":["Godzilla"],"syn":"Dual timeline collision. Lee Shaw's past decision echoes catastrophically in the present."},
-      {"n":9,"title":"Axis Mundi","air":"2024-01-05","titans":["Godzilla","Ion Dragon","MUTO"],"syn":"The group reaches the Hollow Earth convergence point. Multiple Titans react. Shaw makes a desperate choice."},
-      {"n":10,"title":"Beyond Logic","air":"2024-01-12","titans":["Godzilla","Ion Dragon","Frost Vark"],"syn":"Season finale. The portal crisis. Shaw's sacrifice. Cate faces Godzilla. Monarch's future uncertain."}
+[
+  {
+    "id": "monarch",
+    "title": "Monarch: Legacy of Monsters",
+    "year": "2023",
+    "platform": "Apple TV+",
+    "emoji": "👁️",
+    "episodes": [
+      {"num":1,"title":"Aftermath","air":"Nov 17, 2023","titans":["Godzilla","Ion Dragon"],"synopsis":"Cate Randa travels to Tokyo after her father's death and discovers he had a secret life — including a half-brother she never knew."},
+      {"num":2,"title":"Departure","air":"Nov 17, 2023","titans":["Godzilla"],"synopsis":"1950s: Lee Shaw encounters Godzilla for the first time. Present: Cate and Kentaro join forces with a mysterious woman named May."},
+      {"num":3,"title":"Terramoto","air":"Nov 24, 2023","titans":["Godzilla","Titan Larvae"],"synopsis":"The group follows Bill's trail to Kazakhstan. Flashbacks reveal the founding of Monarch."},
+      {"num":4,"title":"Parallels and Interiors","air":"Dec 1, 2023","titans":["Godzilla","Endoswarmers"],"synopsis":"May's true identity is revealed. Lee Shaw's past comes back. A Titan appears in the Alaskan wilderness."},
+      {"num":5,"title":"The Way Out","air":"Dec 8, 2023","titans":["Godzilla","Ion Dragon"],"synopsis":"A desperate escape from a Hollow Earth cave system. Shaw reveals what Monarch is truly hiding."},
+      {"num":6,"title":"Terrifying Miracles","air":"Dec 15, 2023","titans":["Godzilla","Ion Dragon"],"synopsis":"The team witnesses something impossible. Shaw's wartime secret is revealed in full."},
+      {"num":7,"title":"Will the Real May Please Stand Up","air":"Dec 22, 2023","titans":["Godzilla"],"synopsis":"May confronts her past with Apex — a connection to Mechagodzilla's development."},
+      {"num":8,"title":"Gothic Grotto","air":"Jan 5, 2024","titans":["Godzilla","Ion Dragon","Eyeless Wolves"],"synopsis":"Stranded underground. The group fights to survive as a Titan nests nearby."},
+      {"num":9,"title":"Axis Mundi","air":"Jan 12, 2024","titans":["Godzilla","Titan Egg"],"synopsis":"The Hollow Earth entrance is discovered. Shaw makes a sacrifice. Time runs out."},
+      {"num":10,"title":"Beyond Logic","air":"Jan 19, 2024","titans":["Godzilla","Ion Dragon"],"synopsis":"Season finale. The Randa siblings must make an impossible choice about what Monarch becomes."}
     ]
   },
-  "Godzilla Singular Point": {
-    "color":"#00ccff",
-    "eps":[
-      {"n":1,"title":"Terzett","air":"2021-03-25","titans":["Rodan (SP)"],"syn":"Mei Kamino and Yun Arikawa independently encounter the same mysterious frequency. Rodan-type creatures appear in Nigashio."},
-      {"n":2,"title":"Noto","air":"2021-04-01","titans":["Rodan (SP)"],"syn":"The Rodan creatures multiply. Military deployed. Yun discovers the frequency may be extra-temporal in nature."},
-      {"n":3,"title":"Suit","air":"2021-04-08","titans":["Rodan (SP)","Anguirus (SP)"],"syn":"Anguirus spotted. The Red Dust — Archetype — begins spreading. Its connection to Titan biology explored."},
-      {"n":4,"title":"Kurenai","air":"2021-04-15","titans":["Anguirus (SP)"],"syn":"Red Dust fills the city. Anguirus rolls into a ball and attacks. Physics-defying kaiju behavior noted."},
-      {"n":5,"title":"Gusoku","air":"2021-04-22","titans":["Rodan (SP)","Manda"],"syn":"Manda emerges in the sea. Jet Jaguar prototype deployed. The Archetype theory deepens."},
-      {"n":6,"title":"Rozan","air":"2021-04-29","titans":["Rodan (SP)","Godzilla (SP)"],"syn":"Godzilla detected off the coast. First appearance of the Singular Point Godzilla — still in ocean form."},
-      {"n":7,"title":"Hesei","air":"2021-05-06","titans":["Godzilla (SP)"],"syn":"Godzilla grows. Evolves. The Archetype's role in his mutation clarified. Mei's theoretical work proves critical."},
-      {"n":8,"title":"Mahiru","air":"2021-05-13","titans":["Godzilla (SP)","Salunga"],"syn":"Salunga breaks free from Upala Temple. Military overwhelmed. Jet Jaguar upgraded."},
-      {"n":9,"title":"Subdivided","air":"2021-05-20","titans":["Godzilla (SP)","Anguirus (SP)"],"syn":"Godzilla reaches full terrestrial form. The Archetype becomes visible reality. Time loops implied."},
-      {"n":10,"title":"Phalanx","air":"2021-05-27","titans":["Godzilla (SP)"],"syn":"Mass evacuation of Tokyo. Jet Jaguar battles Godzilla. The theoretical physics of kaiju destruction explained."},
-      {"n":11,"title":"New Legend","air":"2021-06-03","titans":["Godzilla (SP)","Salunga"],"syn":"Singular Point — the source of the Archetype — located. Mei's simulation reaches its conclusion."},
-      {"n":12,"title":"Godzilla","air":"2021-06-10","titans":["Godzilla (SP)"],"syn":"Godzilla reaches near-final form. Jet Jaguar's sacrifice enables the Orthogonal Diagonalizer. Crisis contained."},
-      {"n":13,"title":"The Beginning","air":"2021-06-24","titans":["Godzilla (SP)"],"syn":"Resolution. The Singular Point closed. Aftermath. The price of survival. What lies beyond."}
+  {
+    "id": "singular",
+    "title": "Godzilla Singular Point",
+    "year": "2021",
+    "platform": "Netflix",
+    "emoji": "📡",
+    "episodes": [
+      {"num":1,"title":"Terzetto","air":"Mar 25, 2021","titans":["Rodan (flock)"],"synopsis":"Engineer Yun and researcher Mei independently investigate a mysterious radio signal. A strange red powder appears."},
+      {"num":2,"title":"Symbloom","air":"Apr 1, 2021","titans":["Rodan"],"synopsis":"The red dust spreads. A massive flock of Rodan descends on Nigashio City. Yun's robot B.B. proves unexpectedly useful."},
+      {"num":3,"title":"Overlapping Chords","air":"Apr 8, 2021","titans":["Rodan","Manda"],"synopsis":"Mei's research points to a shared signal connecting all Titan appearances. A sea serpent Manda emerges."},
+      {"num":4,"title":"Shadowed and Battered","air":"Apr 15, 2021","titans":["Rodan","Anguirus"],"synopsis":"Anguirus appears. Yun and B.B. attempt to track its origin. The Archetype signal intensifies."},
+      {"num":5,"title":"Forms and Functions","air":"Apr 22, 2021","titans":["Rodan","Anguirus"],"synopsis":"Mei discovers the Singular Point theory — a mathematical inevitability. Monsters evolve faster than Monarch can classify."},
+      {"num":6,"title":"Theorems of the Irrational","air":"Apr 29, 2021","titans":["Godzilla Aquatilis"],"synopsis":"A juvenile Godzilla is sighted in the ocean. Mei realises the connection between all phenomena."},
+      {"num":7,"title":"Habitual Habitat","air":"May 6, 2021","titans":["Godzilla Amphibia","Anguirus"],"synopsis":"Godzilla evolves from aquatic to amphibious form. The red dust accelerates."},
+      {"num":8,"title":"All For One","air":"May 13, 2021","titans":["Godzilla Ultima (emergence)"],"synopsis":"Yun and Mei's paths finally converge. Godzilla's final form begins to emerge."},
+      {"num":9,"title":"Down in Flames","air":"May 20, 2021","titans":["Godzilla Ultima"],"synopsis":"Godzilla Ultima rampages through Japan. Conventional weapons useless. Mei calculates a solution."},
+      {"num":10,"title":"A Great Leap","air":"May 27, 2021","titans":["Godzilla Ultima"],"synopsis":"The plan to create a counter-Archetype weapon is put into motion. Time is fracturing."},
+      {"num":11,"title":"Intersection","air":"Jun 3, 2021","titans":["Godzilla Ultima","Salunga"],"synopsis":"Salunga breaks free. Godzilla Ultima reaches critical mass. Mei enacts the Singular Point solution."},
+      {"num":12,"title":"Reincarnation","air":"Jun 10, 2021","titans":["Godzilla Ultima","Salunga"],"synopsis":"The final counter-measure is deployed. The Singular Point collapses. What remains of Japan?"},
+      {"num":13,"title":"The Beginning","air":"Jun 24, 2021","titans":["Godzilla"],"synopsis":"Epilogue. The world changed. Yun and Mei look toward a future permanently altered by Titan emergence."}
     ]
   },
-  "Rebirth of Mothra Trilogy": {
-    "color":"#ff88cc",
-    "eps":[
-      {"n":1,"title":"Rebirth of Mothra","air":"1996-12-14","titans":["Mothra Leo","Desghidorah"],"syn":"Mothra Leo hatches to battle the evil Desghidorah. The Elias sisters and the fate of the ancient Mothra lineage."},
-      {"n":2,"title":"Rebirth of Mothra II","air":"1997-12-13","titans":["Mothra Leo","Dagahra"],"syn":"Leo gains new forms battling the oceanic polluter Dagahra. Underwater Mothra sequences."},
-      {"n":3,"title":"Rebirth of Mothra III","air":"1998-12-12","titans":["Mothra Leo","King Ghidorah"],"syn":"Leo travels back to the Cretaceous era to stop King Ghidorah. Rainbow Mothra final form."}
+  {
+    "id": "mothra",
+    "title": "Rebirth of Mothra Trilogy",
+    "year": "1996–1998",
+    "platform": "Physical / Streaming",
+    "emoji": "🦋",
+    "episodes": [
+      {"num":1,"title":"Rebirth of Mothra (1996)","air":"Dec 14, 1996","titans":["Mothra Leo","Desghidorah"],"synopsis":"A new Mothra — Leo — must battle the ancient evil Desghidorah to save the Earth. The Elias fairies must aid him."},
+      {"num":2,"title":"Rebirth of Mothra II (1997)","air":"Dec 13, 1997","titans":["Mothra Leo","Dagahra"],"synopsis":"Leo battles Dagahra, a sea monster who pollutes the ocean with toxic Barem starfish. Ancient civilisation mystery unfolds."},
+      {"num":3,"title":"Rebirth of Mothra III (1998)","air":"Dec 12, 1998","titans":["Mothra Leo","King Ghidorah"],"synopsis":"Leo travels back in time to defeat a younger King Ghidorah. The most epic film in the trilogy."}
     ]
   }
-}
+]
