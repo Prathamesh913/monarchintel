@@ -1,0 +1,57 @@
+{
+  "legendary": {
+    "name": "Legendary Entertainment",
+    "url": "https://www.legendary.com",
+    "credit": "© Legendary Entertainment",
+    "type": "rights_holder"
+  },
+  "toho": {
+    "name": "Toho Co. Ltd.",
+    "url": "https://www.toho.co.jp",
+    "credit": "© Toho Co. Ltd.",
+    "type": "rights_holder"
+  },
+  "tmdb": {
+    "name": "The Movie Database",
+    "url": "https://www.themoviedb.org",
+    "credit": "Image and metadata provided by TMDB. This product uses the TMDB API but is not endorsed or certified by TMDB.",
+    "logo": "https://www.themoviedb.org/assets/2/v4/logos/v2/blue_short-8e7b30f73a4020692ccca9c88bafe5dcb6f8a62a4c6bc55cd9ba82bb2cd95f6c.svg",
+    "type": "data_provider"
+  },
+  "wikizilla": {
+    "name": "Wikizilla",
+    "url": "https://wikizilla.org",
+    "credit": "Data cross-referenced with Wikizilla.org — the Godzilla, Kong, Gamera and Kaiju Wiki",
+    "type": "reference"
+  },
+  "wikimedia": {
+    "name": "Wikimedia Commons",
+    "url": "https://commons.wikimedia.org",
+    "credit": "Image via Wikimedia Commons under fair use",
+    "type": "image_host"
+  },
+  "apple_tv": {
+    "name": "Apple TV+",
+    "url": "https://tv.apple.com",
+    "credit": "© Apple TV+ / Skydance Television / Legendary Entertainment",
+    "type": "rights_holder"
+  },
+  "netflix": {
+    "name": "Netflix",
+    "url": "https://netflix.com",
+    "credit": "© Netflix",
+    "type": "rights_holder"
+  },
+  "monarchintel": {
+    "name": "MonarchIntel Editorial",
+    "url": "https://profound-gaufre-07da95.netlify.app",
+    "credit": "Original editorial synthesis of official MonsterVerse canon by MonarchIntel",
+    "type": "editorial"
+  },
+  "fanart": {
+    "name": "Fan Art",
+    "url": null,
+    "credit": "Original fan artwork — individual artist credited separately",
+    "type": "community"
+  }
+}

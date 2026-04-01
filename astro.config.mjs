@@ -1,5 +1,13 @@
-import { defineConfig } from 'astro/config';
+import { defineConfig, envField } from 'astro/config';
 
 export default defineConfig({
-  // options
+  env: {
+    schema: {
+      TMDB_API_KEY: envField.string({
+        context: 'server',
+        access: 'secret',
+        optional: true,
+      }),
+    }
+  }
 });

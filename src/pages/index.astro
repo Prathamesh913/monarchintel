@@ -1,12 +1,124 @@
----
+﻿---
 import titansData from '../data/titans.json';
 import moviesData from '../data/movies.json';
 import episodesData from '../data/episodes.json';
 import timelineData from '../data/timeline.json';
+import sourcesData from '../data/sources.json';
+
+const TMDB_KEY = import.meta.env.TMDB_API_KEY;
+console.log('TMDB KEY:', TMDB_KEY ? 'found' : 'missing');
+
+const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+const moviesWithPosters: Array<typeof moviesData[number] & { poster: string | null; rating?: number | null; sources: { data: string[]; image: string[] } }> = [];
+for (const movie of moviesData) {
+  if (!movie.tmdb_id || !TMDB_KEY) {
+    moviesWithPosters.push({ 
+      ...movie, 
+      poster: null,
+      sources: { data: [movie.era === 'monsterverse' ? 'legendary' : 'toho', 'wikizilla'], image: [] }
+    });
+    continue;
+  }
+  try {
+    await delay(200);
+    const endpoint = movie.type === 'series'
+      ? `https://api.themoviedb.org/3/tv/${movie.tmdb_id}?api_key=${TMDB_KEY}`
+      : `https://api.themoviedb.org/3/movie/${movie.tmdb_id}?api_key=${TMDB_KEY}`;
+    const res = await fetch(endpoint);
+    const data = await res.json();
+    const posterPath = data.poster_path;
+    const rating = data.vote_average ? Math.round(data.vote_average * 10) / 10 : null;
+    console.log(`${movie.title}: ${posterPath ? 'poster found' : 'no poster'} | rating: ${rating}`);
+    moviesWithPosters.push({
+      ...movie,
+      poster: posterPath
+        ? `https://image.tmdb.org/t/p/w200${posterPath}`
+        : null,
+      rating: rating,
+      sources: { data: [movie.era === 'monsterverse' ? 'legendary' : 'toho', 'wikizilla'], image: posterPath ? ['tmdb'] : [] }
+    });
+  } catch (e) {
+    console.log(`${movie.title}: fetch error - ${e.message}`);
+    moviesWithPosters.push({ 
+      ...movie, 
+      poster: null,
+      sources: { data: [movie.era === 'monsterverse' ? 'legendary' : 'toho', 'wikizilla'], image: [] }
+    });
+  }
+}
+
+type EpisodeWithStill = typeof episodesData[number]['episodes'][number] & { still: string | null; air: string };
+type ShowWithStills = typeof episodesData[number] & { episodes: EpisodeWithStill[]; sources: { data: string[]; image: string[] } };
+
+const episodesWithStills: ShowWithStills[] = [];
+for (const show of episodesData) {
+  // Fetch full season from TMDB once (instead of one call per episode)
+  const tmdbEpMap = new Map<number, any>();
+  if ('tmdb_id' in show && show.tmdb_id && TMDB_KEY) {
+    try {
+      await delay(300);
+      const seasonNum = ('season' in show) ? show.season : 1;
+      const url = `https://api.themoviedb.org/3/tv/${show.tmdb_id}/season/${seasonNum}?api_key=${TMDB_KEY}`;
+      const res = await fetch(url);
+      const data = await res.json();
+      if (Array.isArray(data.episodes)) {
+        for (const ep of data.episodes) tmdbEpMap.set(ep.episode_number, ep);
+        console.log(`${show.title}: fetched ${tmdbEpMap.size} episodes from TMDB`);
+      }
+    } catch (e) {
+      console.log(`${show.title}: season fetch error - ${e.message}`);
+    }
+  }
+
+  const formatDate = (raw: string) =>
+    new Date(raw).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+
+  const enrichedEps: EpisodeWithStill[] = [];
+  const jsonNums = new Set(show.episodes.map(ep => ep.num));
+
+  // Enrich existing JSON episodes with live TMDB air date + still
+  for (const ep of show.episodes) {
+    const t = tmdbEpMap.get(ep.num);
+    enrichedEps.push({
+      ...ep,
+      air: t?.air_date ? formatDate(t.air_date) : ep.air,
+      still: t?.still_path ? `https://image.tmdb.org/t/p/w300${t.still_path}` : null,
+    });
+  }
+
+  // Auto-add any TMDB episodes not yet in episodes.json
+  for (const [epNum, t] of tmdbEpMap) {
+    if (!jsonNums.has(epNum)) {
+      console.log(`${show.title}: auto-adding E${epNum} "${t.name}" from TMDB`);
+      enrichedEps.push({
+        num: epNum,
+        title: t.name || `Episode ${epNum}`,
+        air: t.air_date ? formatDate(t.air_date) : 'TBA',
+        titans: [],
+        synopsis: t.overview || 'Synopsis not yet available.',
+        still: t.still_path ? `https://image.tmdb.org/t/p/w300${t.still_path}` : null,
+      });
+    }
+  }
+
+  enrichedEps.sort((a, b) => a.num - b.num);
+  episodesWithStills.push({ 
+    ...show, 
+    episodes: enrichedEps,
+    sources: { 
+      data: [show.platform === 'Apple TV+' ? 'apple_tv' : show.platform === 'Netflix' ? 'netflix' : 'toho', 'wikizilla'], 
+      image: ['tmdb'] 
+    }
+  });
+}
+
+
 const titansJSON = JSON.stringify(titansData);
-const moviesJSON = JSON.stringify(moviesData);
-const episodesJSON = JSON.stringify(episodesData);
+const moviesJSON = JSON.stringify(moviesWithPosters);
+const episodesJSON = JSON.stringify(episodesWithStills);
 const timelineJSON = JSON.stringify(timelineData);
+const sourcesJSON = JSON.stringify(sourcesData);
 ---
 
 <!DOCTYPE html>
@@ -39,8 +151,9 @@ const timelineJSON = JSON.stringify(timelineData);
 }
 *{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth}
-body{background:var(--deep);color:var(--text);font-family:var(--font-ui);overflow-x:hidden}
+body{background:var(--deep);color:var(--text);font-family:var(--font-ui);overflow-x:hidden;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
 body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,0.015) 3px,rgba(0,0,0,0.015) 4px)}
+::selection{background:rgba(0,255,136,0.22);color:#fff}
 ::-webkit-scrollbar{width:5px;height:5px}::-webkit-scrollbar-track{background:var(--void)}::-webkit-scrollbar-thumb{background:var(--border-2)}::-webkit-scrollbar-thumb:hover{background:var(--nuclear)}
 
 /* ── MASTHEAD ── */
@@ -54,6 +167,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;
 .mast-nav::-webkit-scrollbar{display:none}
 .mnav{height:58px;padding:0 0.95rem;background:none;border:none;color:var(--muted);font-family:var(--font-ui);font-size:0.78rem;font-weight:600;letter-spacing:2px;text-transform:uppercase;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:all 0.2s}
 .mnav:hover,.mnav.on{color:var(--nuclear);border-bottom-color:var(--nuclear)}
+.mnav:active{opacity:0.65;transition:opacity 0.1s}
 .mast-right{margin-left:auto;display:flex;align-items:center;gap:1rem;flex-shrink:0}
 .mast-tag{font-family:var(--font-mono);font-size:0.52rem;color:var(--monarch);border:1px solid var(--monarch-2);padding:0.22rem 0.6rem;letter-spacing:2px;animation:blinktag 4s infinite}
 @keyframes blinktag{0%,90%,100%{opacity:1}95%{opacity:0.4}}
@@ -85,20 +199,20 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;
 @keyframes gridflow{0%{transform:translateY(0)}100%{transform:translateY(100px)}}
 .hero-accent-line{position:fixed;left:0;top:58px;bottom:0;width:3px;background:linear-gradient(to bottom,transparent,var(--nuclear) 20%,var(--nuclear) 80%,transparent);opacity:0.3;pointer-events:none;z-index:0}
 .hero-left{position:relative;z-index:1}
-.hero-eye{font-family:var(--font-mono);font-size:0.62rem;color:var(--nuclear);letter-spacing:5px;margin-bottom:1.5rem;display:flex;align-items:center;gap:0.7rem;opacity:0;animation:fadeup 0.7s 0.2s forwards}
+.hero-eye{font-family:var(--font-mono);font-size:0.62rem;color:var(--nuclear);letter-spacing:5px;margin-bottom:1.5rem;display:flex;align-items:center;gap:0.7rem;opacity:0;animation:fadeup 0.4s 0.15s cubic-bezier(0,0,0.2,1) forwards}
 .hero-eye::before{content:'';width:28px;height:1px;background:var(--nuclear)}
-.hero-title{font-family:var(--font-display);line-height:0.88;letter-spacing:-1px;margin-bottom:1.2rem;opacity:0;animation:fadeup 0.7s 0.4s forwards}
-.hero-title .l1{font-size:clamp(4rem,10vw,9rem);background:linear-gradient(155deg,#fff 0%,#8bbdd4 55%,#2a6080 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;display:block}
-.hero-title .l2{font-size:clamp(4rem,10vw,9rem);background:linear-gradient(155deg,var(--nuclear) 0%,var(--nuclear-2) 55%,#004433 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;display:block;filter:drop-shadow(0 0 30px rgba(0,255,136,0.18))}
-.hero-deck{font-family:var(--font-serif);font-style:italic;font-size:1.2rem;color:var(--text-2);line-height:1.7;max-width:540px;margin-bottom:2.5rem;opacity:0;animation:fadeup 0.7s 0.6s forwards}
-.hero-counters{display:flex;gap:2.5rem;margin-bottom:2.5rem;opacity:0;animation:fadeup 0.7s 0.8s forwards;flex-wrap:wrap}
-.hcounter{}.hcn{font-family:var(--font-display);font-size:2.8rem;color:var(--nuclear);line-height:1;text-shadow:0 0 20px rgba(0,255,136,0.25);display:block}
+.hero-title{font-family:var(--font-display);line-height:0.88;letter-spacing:-1px;margin-bottom:1.2rem;opacity:0;animation:fadeup 0.4s 0.25s cubic-bezier(0,0,0.2,1) forwards}
+.hero-title .l1{font-size:clamp(4rem,10vw,9rem);background:linear-gradient(155deg,#fff 0%,#8bbdd4 55%,#2a6080 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;display:block;text-wrap:balance}
+.hero-title .l2{font-size:clamp(4rem,10vw,9rem);background:linear-gradient(155deg,var(--nuclear) 0%,var(--nuclear-2) 55%,#004433 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;display:block;filter:drop-shadow(0 0 30px rgba(0,255,136,0.18));text-wrap:balance}
+.hero-deck{font-family:var(--font-serif);font-style:italic;font-size:1.2rem;color:var(--text-2);line-height:1.7;max-width:540px;margin-bottom:2.5rem;opacity:0;animation:fadeup 0.4s 0.35s cubic-bezier(0,0,0.2,1) forwards;text-wrap:pretty}
+.hero-counters{display:flex;gap:2.5rem;margin-bottom:2.5rem;opacity:0;animation:fadeup 0.4s 0.45s cubic-bezier(0,0,0.2,1) forwards;flex-wrap:wrap}
+.hcounter{}.hcn{font-family:var(--font-display);font-size:2.8rem;color:var(--nuclear);line-height:1;text-shadow:0 0 20px rgba(0,255,136,0.25);display:block;font-variant-numeric:tabular-nums}
 .hcl{font-family:var(--font-mono);font-size:0.58rem;color:var(--muted);letter-spacing:3px;margin-top:0.1rem;display:block}
-.hero-btns{display:flex;gap:0.8rem;flex-wrap:wrap;opacity:0;animation:fadeup 0.7s 1s forwards}
-@keyframes fadeup{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.hero-btns{display:flex;gap:0.8rem;flex-wrap:wrap;opacity:0;animation:fadeup 0.4s 0.55s cubic-bezier(0,0,0.2,1) forwards}
+@keyframes fadeup{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 
 /* Featured Titan */
-.feat-titan{position:relative;z-index:1;background:var(--surface);border:1px solid var(--border-2);overflow:hidden;opacity:0;animation:fadeup 0.7s 0.6s forwards}
+.feat-titan{position:relative;z-index:1;background:var(--surface);border:1px solid var(--border-2);overflow:hidden;opacity:0;animation:fadeup 0.4s 0.4s cubic-bezier(0,0,0.2,1) forwards}
 .feat-titan::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--nuclear),transparent)}
 .ft-head{background:linear-gradient(135deg,rgba(0,255,136,0.07),rgba(0,170,255,0.04));border-bottom:1px solid var(--border);padding:0.9rem 1.5rem;display:flex;justify-content:space-between;align-items:center}
 .ft-head-lbl{font-family:var(--font-mono);font-size:0.58rem;color:var(--nuclear);letter-spacing:3px}
@@ -108,7 +222,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;
 @keyframes floatfeat{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}
 .ft-name{font-family:var(--font-display);font-size:2.8rem;color:#fff;letter-spacing:3px;line-height:1}
 .ft-alias{font-family:var(--font-mono);font-size:0.58rem;color:var(--muted);letter-spacing:2px;margin-top:0.25rem}
-.ft-pull{font-family:var(--font-serif);font-style:italic;font-size:0.92rem;color:var(--text-2);line-height:1.7;margin:1rem 0;padding:0.8rem 1rem;border-left:2px solid var(--nuclear);background:rgba(0,255,136,0.03)}
+.ft-pull{font-family:var(--font-serif);font-style:italic;font-size:0.92rem;color:var(--text-2);line-height:1.7;margin:1rem 0;padding:0.8rem 1rem;border-left:2px solid var(--nuclear);background:rgba(0,255,136,0.03);text-wrap:pretty}
 .ft-pull-attr{font-family:var(--font-mono);font-size:0.52rem;color:var(--muted);letter-spacing:2px;margin-top:0.4rem;font-style:normal}
 .ft-badges{display:flex;gap:0.4rem;flex-wrap:wrap;margin-top:1rem}
 .ft-foot{border-top:1px solid var(--border);padding:0.75rem 1.5rem;display:flex;justify-content:space-between;align-items:center}
@@ -120,8 +234,10 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;
 .btn{display:inline-flex;align-items:center;gap:0.5rem;font-family:var(--font-display);letter-spacing:3px;cursor:pointer;border:none;transition:all 0.2s;font-size:1rem}
 .btn-p{background:var(--nuclear);color:var(--inverse);padding:0.82rem 2.2rem;clip-path:polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%)}
 .btn-p:hover{background:#fff;transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,255,136,0.2)}
+.btn-p:active{background:var(--nuclear-2);transform:translateY(0) scale(0.97);transition:transform 0.08s,background 0.08s}
 .btn-s{background:transparent;color:var(--text);border:1px solid var(--border-2) !important;padding:0.82rem 2.2rem;clip-path:none}
 .btn-s:hover{border-color:var(--nuclear) !important;color:var(--nuclear)}
+.btn-s:active,.btn-g:active{transform:scale(0.97);opacity:0.8;transition:transform 0.08s,opacity 0.08s}
 .btn-g{background:transparent;color:var(--muted);border:1px solid var(--border) !important;padding:0.65rem 1.4rem;font-family:var(--font-mono);letter-spacing:2px;font-size:0.7rem;clip-path:none}
 .btn-g:hover{border-color:var(--nuclear) !important;color:var(--nuclear)}
 
@@ -140,20 +256,22 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;
 /* ── SECTION COMMON ── */
 .sec{max-width:1400px;margin:0 auto;padding:4.5rem 2rem}
 .sec-head{display:flex;align-items:baseline;gap:1rem;margin-bottom:1rem;padding-bottom:1rem;border-bottom:1px solid var(--border);flex-wrap:wrap}
-.sec-title{font-family:var(--font-display);font-size:2.2rem;color:#fff;letter-spacing:2px}
+.sec-title{font-family:var(--font-display);font-size:2.2rem;color:#fff;letter-spacing:2px;text-wrap:balance}
 .sec-code{font-family:var(--font-mono);font-size:0.62rem;color:var(--nuclear);letter-spacing:3px}
-.sec-count{margin-left:auto;font-family:var(--font-mono);font-size:0.62rem;color:var(--muted)}
-.sec-deck{font-family:var(--font-serif);font-style:italic;font-size:1.05rem;color:var(--text-2);line-height:1.7;margin-bottom:2rem;max-width:700px}
+.sec-count{margin-left:auto;font-family:var(--font-mono);font-size:0.62rem;color:var(--muted);display:flex;align-items:center;gap:0.6rem}
+.sec-deck{font-family:var(--font-serif);font-style:italic;font-size:1.05rem;color:var(--text-2);line-height:1.7;margin-bottom:2rem;max-width:700px;text-wrap:pretty}
 .divider{height:1px;background:linear-gradient(90deg,transparent,var(--border-2),transparent);margin:0 2rem}
 
 /* ── CONTROLS ── */
 .ctrl{display:flex;gap:0.5rem;margin-bottom:1.5rem;flex-wrap:wrap;align-items:center}
-.tog{background:transparent;border:1px solid var(--border);color:var(--muted);padding:0.42rem 1rem;font-family:var(--font-ui);font-size:0.75rem;font-weight:600;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all 0.2s}
+.tog{background:transparent;border:1px solid var(--border);color:var(--muted);padding:0.55rem 1rem;font-family:var(--font-ui);font-size:0.75rem;font-weight:600;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all 0.2s}
 .tog:hover,.tog.on{background:rgba(0,255,136,0.07);border-color:var(--nuclear);color:var(--nuclear)}
 .tog.mon:hover,.tog.mon.on{background:rgba(232,180,0,0.07);border-color:var(--monarch);color:var(--monarch)}
+.tog:active{transform:scale(0.96);transition:transform 0.08s}
 .srchwrap{position:relative;flex:1;min-width:180px}
 .srchwrap::before{content:'⌕';position:absolute;left:0.75rem;top:50%;transform:translateY(-50%);color:var(--muted);font-size:1rem;pointer-events:none}
 .srch{width:100%;background:var(--surface);border:1px solid var(--border);color:var(--text);padding:0.42rem 0.9rem 0.42rem 2.1rem;font-family:var(--font-mono);font-size:0.7rem;letter-spacing:1px;outline:none;transition:border-color 0.2s}
+.srch::placeholder{color:var(--muted);letter-spacing:1px;opacity:1}
 .srch:focus{border-color:var(--nuclear);background:var(--surface-3)}
 .fsel{background:var(--surface);border:1px solid var(--border);color:var(--text);padding:0.42rem 0.9rem;font-family:var(--font-mono);font-size:0.65rem;letter-spacing:1px;outline:none;cursor:pointer}
 .fsel:focus{border-color:var(--nuclear)}
@@ -184,13 +302,29 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;
 
 /* ── WATCH ORDER ── */
 .wo-list{display:flex;flex-direction:column;gap:4px}
-.wo-item{display:grid;grid-template-columns:52px 44px 1fr 80px;gap:1.5rem;align-items:start;padding:1.8rem 1.5rem;background:var(--surface);border:1px solid transparent;border-left:3px solid transparent;cursor:pointer;transition:all 0.2s}
+.wo-item{display:grid;grid-template-columns:52px 80px 1fr 80px;gap:1.5rem;align-items:start;padding:1.8rem 1.5rem;background:var(--surface);border:1px solid transparent;border-left:3px solid transparent;cursor:pointer;transition:all 0.2s}
 .wo-item:hover{background:var(--surface-2);border-color:var(--border);border-left-color:var(--nuclear)}
 .wo-item.open{background:var(--surface-2);border-color:var(--border);border-left-color:var(--nuclear)}
-.wo-num{font-family:var(--font-display);font-size:1.6rem;color:var(--border-2);text-align:center;transition:all 0.2s;padding-top:0.15rem}
+.wo-num{font-family:var(--font-display);font-size:1.6rem;color:var(--border-2);text-align:center;transition:all 0.2s;padding-top:0.15rem;font-variant-numeric:tabular-nums}
 .wo-item:hover .wo-num,.wo-item.open .wo-num{color:var(--nuclear);text-shadow:0 0 12px var(--nuclear)}
-.wo-icon{width:44px;height:44px;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:1.1rem;margin-top:0.1rem}
-.wo-body{min-width:0}
+.wo-icon {
+  width: 70px;
+  height: 104px;
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.wo-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.wo-body{min-width:0;position:relative}
 .wo-title{font-size:1.15rem;font-weight:700;color:#fff;letter-spacing:0.5px;margin-bottom:0.5rem}
 .wo-meta{display:flex;gap:0.9rem;margin-top:0.22rem;margin-bottom:0.55rem;align-items:center;flex-wrap:wrap}
 .wo-year{font-family:var(--font-mono);font-size:0.72rem;color:var(--muted)}
@@ -204,26 +338,30 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;
 .wo-chips{display:flex;gap:0.4rem;flex-wrap:wrap;margin-top:0.4rem}
 .wo-chip{font-family:var(--font-mono);font-size:0.62rem;background:rgba(0,255,136,0.06);border:1px solid rgba(0,255,136,0.16);color:var(--nuclear);padding:0.18rem 0.55rem}
 .wo-right{text-align:right;padding-top:0.15rem}
-.wo-score{font-family:var(--font-display);font-size:1.4rem;color:var(--monarch);line-height:1}
+.wo-score{font-family:var(--font-display);font-size:1.4rem;color:var(--monarch);line-height:1;font-variant-numeric:tabular-nums}
 .wo-plat{font-family:var(--font-mono);font-size:0.56rem;color:var(--muted);margin-top:0.15rem}
 .wo-expand{display:none;grid-column:1/-1;border-top:1px solid var(--border);padding-top:1rem;margin-top:0.5rem}
 .wo-expand.show{display:block}
 .wo-exp-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:0.7rem;margin-bottom:0.8rem}
 .wo-ef label{font-family:var(--font-mono);font-size:0.56rem;color:var(--muted);letter-spacing:2px;display:block;margin-bottom:0.15rem}
 .wo-ef span{font-size:0.88rem;font-weight:600}
-.wo-syn{font-family:var(--font-serif);font-style:italic;font-size:0.92rem;color:var(--text-2);line-height:1.7}
+.wo-syn{font-family:var(--font-serif);font-style:italic;font-size:0.92rem;color:var(--text-2);line-height:1.7;text-wrap:pretty}
 
 /* ── TITANDEX ── */
 .tdex-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1px;background:var(--border)}
 .tcard{background:var(--surface);border:1px solid transparent;padding:1.4rem;cursor:pointer;transition:all 0.25s;position:relative;overflow:hidden}
 .tcard::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--ca,var(--nuclear)),transparent);opacity:0;transition:opacity 0.2s}
-.tcard:hover{background:var(--surface-2);border-color:var(--border-2);transform:translateY(-3px);box-shadow:0 12px 32px rgba(0,0,0,0.4)}
+.tcard:hover{background:var(--surface-2);border-color:var(--border-2);transform:translateY(-2px);box-shadow:0 2px 4px rgba(2,6,20,0.3),0 8px 20px rgba(2,6,20,0.35),0 12px 32px rgba(0,255,136,0.05)}
 .tcard:hover::before{opacity:1}
+.tcard:active{transform:translateY(0) scale(0.98);transition:transform 0.08s}
 .tcard[data-a="alpha"]{--ca:var(--alpha)}
 .tcard[data-a="hostile"]{--ca:var(--hostile)}
 .tcard[data-a="benevolent"]{--ca:var(--benevolent)}
 .tcard[data-a="neutral"]{--ca:var(--neutral)}
 .tcard[data-a="unknown"]{--ca:var(--sky)}
+/* Omega threat card-level pulse */
+.tcard[data-threat="omega"]{animation:omg-card 3s ease-in-out infinite}
+@keyframes omg-card{0%,100%{box-shadow:0 0 0 rgba(255,0,85,0)}50%{box-shadow:0 0 18px rgba(255,0,85,0.18),inset 0 0 8px rgba(255,0,85,0.03)}}
 .tc-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:0.6rem}
 .tc-id{font-family:var(--font-mono);font-size:0.56rem;color:var(--muted);letter-spacing:2px}
 .tc-emoji{font-size:2.6rem;margin:0.4rem 0;line-height:1;filter:drop-shadow(0 4px 10px rgba(0,0,0,0.5))}
@@ -246,14 +384,15 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;
 .moverlay{position:fixed;inset:0;background:rgba(2,6,8,0.96);z-index:3000;display:none;align-items:center;justify-content:center;padding:1rem;backdrop-filter:blur(8px)}
 .moverlay.open{display:flex;animation:mopen 0.25s ease}
 @keyframes mopen{from{opacity:0;transform:scale(0.96)}to{opacity:1;transform:scale(1)}}
-.modal{background:var(--surface);border:1px solid var(--border-2);width:100%;max-width:880px;max-height:92vh;overflow-y:auto}
-.mhd{display:flex;align-items:flex-start;gap:1.5rem;padding:1.5rem;background:var(--surface-2);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:10}
+.modal{background:var(--surface);border:1px solid var(--border-2);width:100%;max-width:880px;max-height:92vh;overflow-y:auto;overflow-x:hidden}
+.mhd{display:flex;align-items:flex-start;gap:1.5rem;padding:1.5rem;background:var(--surface-2);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:20}
 .mhd-info{flex:1}
 .mid-lbl{font-family:var(--font-mono);font-size:0.58rem;color:var(--muted);letter-spacing:3px;margin-bottom:0.25rem}
 .mhd-name{font-family:var(--font-display);font-size:2.2rem;color:#fff;letter-spacing:3px;line-height:1}
 .mhd-alias{font-family:var(--font-mono);font-size:0.62rem;color:var(--muted);letter-spacing:2px;margin-top:0.2rem}
 .mclose{background:none;border:1px solid var(--border);color:var(--muted);width:34px;height:34px;cursor:pointer;font-size:0.85rem;transition:all 0.2s;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .mclose:hover{border-color:var(--hostile);color:var(--hostile)}
+.mclose:active{transform:scale(0.9);transition:transform 0.08s}
 .mbody{padding:1.5rem;display:grid;grid-template-columns:190px 1fr;gap:1.5rem}
 @media(max-width:600px){.mbody{grid-template-columns:1fr}}
 .mdisp{background:var(--deep);border:1px solid var(--border);padding:1.5rem;text-align:center;display:flex;flex-direction:column;align-items:center;gap:0.5rem}
@@ -276,33 +415,37 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;
 .stab{background:none;border:none;color:var(--muted);font-family:var(--font-ui);font-size:0.78rem;font-weight:600;letter-spacing:2px;text-transform:uppercase;padding:0.8rem 1.5rem;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:all 0.2s}
 .stab:hover,.stab.on{color:var(--nuclear);border-bottom-color:var(--nuclear)}
 .ep-list{display:flex;flex-direction:column;gap:1px}
-.ep-item{display:grid;grid-template-columns:50px 1fr;gap:1rem;align-items:start;padding:1rem 1.2rem;background:var(--surface);border:1px solid transparent;border-left:3px solid transparent;cursor:pointer;transition:all 0.2s}
+.ep-item{display:grid;grid-template-columns:50px 160px 1fr 40px;gap:1rem;align-items:start;padding:1rem 1.2rem;background:var(--surface);border:1px solid transparent;border-left:3px solid transparent;cursor:pointer;transition:all 0.2s}
+.ep-still{width:160px;min-width:160px;max-width:160px;height:90px;max-height:90px;border:1px solid var(--border);overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:1.8rem;background:var(--deep);flex-shrink:0}
+.ep-still img{width:100%;height:100%;object-fit:cover;display:block;flex-shrink:0}
 .ep-item:hover{background:var(--surface-2);border-color:var(--border);border-left-color:var(--monarch)}
 .ep-item.open{background:var(--surface-2);border-left-color:var(--monarch);border-color:var(--border)}
-.ep-num{font-family:var(--font-display);font-size:1.5rem;color:var(--border-2);text-align:center;transition:color 0.2s}
+.ep-num{font-family:var(--font-display);font-size:1.5rem;color:var(--border-2);text-align:center;transition:color 0.2s;font-variant-numeric:tabular-nums}
 .ep-item:hover .ep-num,.ep-item.open .ep-num{color:var(--monarch)}
-.ep-title{font-size:1rem;font-weight:700;color:#fff}
-.ep-air{font-family:var(--font-mono);font-size:0.58rem;color:var(--muted);letter-spacing:2px;margin-top:0.2rem}
+.ep-title{font-size:1.15rem;font-weight:700;color:#fff;letter-spacing:0.5px;margin-bottom:0.5rem}
+.ep-air{font-family:var(--font-mono);font-size:0.72rem;color:var(--muted);letter-spacing:2px;margin-top:0.2rem;font-variant-numeric:tabular-nums}
 .ep-titans{display:flex;gap:0.3rem;flex-wrap:wrap;margin-top:0.35rem}
-.ep-tag{font-family:var(--font-mono);font-size:0.52rem;background:rgba(232,180,0,0.06);border:1px solid rgba(232,180,0,0.18);color:var(--monarch);padding:0.08rem 0.4rem}
-.ep-expand{display:none;grid-column:1/-1;border-top:1px solid var(--border);padding-top:0.8rem;margin-top:0.6rem}
+.ep-tag{font-family:var(--font-mono);font-size:0.62rem;letter-spacing:2px;background:rgba(232,180,0,0.06);border:1px solid rgba(232,180,0,0.18);color:var(--monarch);padding:0.18rem 0.55rem}
+.ep-expand{display:none;grid-column:1/-1;border-top:1px solid var(--border);padding-top:0.8rem;margin-top:0.6rem;position:relative}
 .ep-expand.show{display:block}
-.ep-syn{font-family:var(--font-serif);font-style:italic;font-size:0.9rem;color:var(--text-2);line-height:1.7}
+.ep-syn{font-family:var(--font-serif);font-style:italic;font-size:0.92rem;color:var(--text-2);line-height:1.7;text-wrap:pretty}
 
 /* ── SIZE CHART ── */
-.size-wrap{background:var(--surface);border:1px solid var(--border);padding:2rem;overflow-x:auto}
-.size-bars{display:flex;align-items:flex-end;gap:4px;height:300px;border-bottom:1px solid var(--border-2);min-width:600px;padding-bottom:0}
-.sbar-col{display:flex;flex-direction:column;align-items:center;flex:1;height:100%;justify-content:flex-end}
-.sbar-val{font-family:var(--font-mono);font-size:0.5rem;color:var(--nuclear);margin-bottom:0.3rem;text-align:center}
+.size-wrap{background:var(--surface);border:1px solid var(--border);padding:2rem;overflow-x:auto;overflow-y:visible;overflow:visible}
+.size-bars{display:flex;align-items:flex-end;gap:4px;height:300px;border-bottom:1px solid var(--border-2);min-width:600px;padding-bottom:0;margin-bottom:3rem}
+.sbar-col{display:flex;flex-direction:column;align-items:center;flex:1;height:100%;justify-content:flex-end;position:relative;cursor:pointer}
+.sbar-val{font-family:var(--font-mono);font-size:0.62rem;color:var(--nuclear);margin-bottom:0.4rem;text-align:center}
 .sbar{width:100%;transition:height 1.2s cubic-bezier(0.34,1.56,0.64,1);min-width:28px}
 .sbar-inner{width:100%;height:100%;background:linear-gradient(to top,var(--nuclear-2),var(--nuclear));opacity:0.75;position:relative}
 .sbar-inner::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:#fff;box-shadow:0 0 8px var(--nuclear)}
 .sbar:hover .sbar-inner{opacity:1}
-.sbar-label{font-family:var(--font-mono);font-size:0.48rem;color:var(--muted);letter-spacing:1px;margin-top:0.6rem;text-align:center;transform:rotate(-40deg);transform-origin:top center;white-space:nowrap}
+.sbar-label{font-size:1.2rem;margin-top:0.8rem;text-align:center;display:block;line-height:1;padding-bottom:0.3rem}
+.sbar-col .sbar-tooltip{display:none;position:absolute;top:0;left:50%;transform:translateX(-50%) translateY(-110%);background:var(--surface-2);border:1px solid var(--nuclear);color:var(--nuclear);font-family:var(--font-mono);font-size:0.62rem;letter-spacing:1px;padding:0.3rem 0.6rem;white-space:nowrap;z-index:10;pointer-events:none}
+.sbar-col:hover .sbar-tooltip{display:block}
 .size-legend{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:0.5rem;margin-top:1.5rem}
-.sleg{display:flex;align-items:center;gap:0.7rem;padding:0.35rem}
-.sleg-bar{width:10px;height:10px;background:var(--nuclear);flex-shrink:0}
-.sleg-info{font-family:var(--font-mono);font-size:0.58rem;color:var(--text-2)}
+.sleg{display:flex;align-items:flex-start;gap:0.7rem;padding:0.35rem}
+.sleg-bar{width:10px;height:10px;background:var(--nuclear);flex-shrink:0;margin-top:3px}
+.sleg-info{font-family:var(--font-mono);font-size:0.72rem;color:var(--text-2)}
 .sleg-info span{color:var(--nuclear)}
 
 /* ── RELATION WEB ── */
@@ -373,6 +516,31 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;
 .footer-bottom{max-width:1400px;margin:2rem auto 0;padding-top:1.5rem;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem}
 .footer-copy{font-family:var(--font-mono);font-size:0.58rem;color:var(--muted);letter-spacing:2px}
 .footer-disc{font-family:var(--font-mono);font-size:0.52rem;color:var(--border-2);letter-spacing:1px;max-width:500px;text-align:right;line-height:1.6}
+
+/* ── ATTRIBUTION UI ── */
+.attr-wrap{position:relative;display:inline-flex;align-items:center;justify-content:center}
+.attr-icon{position:relative;width:22px;height:22px;border-radius:50%;border:1px solid var(--border-2);color:var(--muted);font-family:var(--font-serif);font-size:0.8rem;display:flex;align-items:center;justify-content:center;cursor:help;transition:all 0.2s;background:var(--surface)}
+.attr-icon::before{content:'';position:absolute;inset:-7px;border-radius:50%}
+.attr-wrap:hover .attr-icon{border-color:var(--nuclear);color:var(--nuclear);background:rgba(0,255,136,0.05)}
+.attr-pop{position:absolute;bottom:calc(100% + 8px);right:0;width:280px;background:rgba(4,10,14,0.98);backdrop-filter:blur(10px);border:1px solid var(--border-2);padding:1rem;opacity:0;visibility:hidden;transform:translateY(4px);transition:all 0.2s;z-index:9999;box-shadow:0 10px 30px rgba(0,0,0,0.5);text-align:left}
+/* Ensure the popover doesn't get clipped by parents if they have overflow hidden */
+.attr-wrap:hover .attr-pop{opacity:1;visibility:visible;transform:translateY(0)}
+.attr-pop::after{content:'';position:absolute;top:100%;right:8px;border-width:6px;border-style:solid;border-color:var(--border-2) transparent transparent transparent}
+/* Down-direction variant — tooltip opens below the icon */
+.attr-wrap.down .attr-pop{bottom:auto;top:calc(100% + 8px);transform:translateY(-4px)}
+.attr-wrap.down:hover .attr-pop{transform:translateY(0)}
+.attr-wrap.down .attr-pop::after{top:auto;bottom:100%;border-color:transparent transparent var(--border-2) transparent}
+.ap-sec{margin-bottom:0.8rem}
+.ap-sec:last-child{margin-bottom:0}
+.ap-lbl{font-family:var(--font-mono);font-size:0.52rem;color:var(--nuclear);letter-spacing:2px;margin-bottom:0.3rem}
+.ap-item{display:flex;align-items:flex-start;gap:0.5rem;margin-bottom:0.4rem}
+.ap-item:last-child{margin-bottom:0}
+.ap-logo{width:14px;height:14px;object-fit:contain;flex-shrink:0;margin-top:2px;border-radius:2px}
+.ap-txt{font-size:0.75rem;color:var(--text-2);line-height:1.4}
+.ap-txt strong{color:#fff;font-weight:600;display:block;margin-bottom:0.1rem}
+.ap-txt a{color:var(--text-2);text-decoration:none}
+.ap-txt a:hover{color:var(--sky);text-decoration:underline}
+
 </style>
 </head>
 <body>
@@ -487,14 +655,14 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;
         <div class="hg-deck">Season-by-season breakdowns for Monarch: Legacy of Monsters, Singular Point, and more.</div>
         <div class="hg-meta">36 EPISODES ACROSS 3 SERIES</div>
       </div>
-      <div class="hg-item hg-wide" onclick="showPage('dossier')">
+      <div class="hg-item hg-wide" onclick="window.location.href='/dossier'">
         <div style="display:flex;align-items:center;gap:2rem;flex-wrap:wrap">
           <div>
             <div style="font-family:var(--font-mono);font-size:0.62rem;color:var(--nuclear);letter-spacing:3px;margin-bottom:0.5rem">◆ AI-POWERED FEATURE</div>
             <div style="font-family:var(--font-display);font-size:1.8rem;color:#fff;letter-spacing:3px;margin-bottom:0.4rem">Monarch Dossier Generator</div>
             <div style="font-family:var(--font-serif);font-style:italic;font-size:0.95rem;color:var(--text-2);line-height:1.6;max-width:550px">Create an official Monarch classification document for any Titan — real or imagined. AI-generated, styled as a genuine classified field report, print-ready and shareable.</div>
           </div>
-          <button class="btn btn-p" style="flex-shrink:0" >Generate Dossier</button>
+          <button class="btn btn-p" style="flex-shrink:0" onclick="event.stopPropagation();window.location.href='/dossier'">Generate Dossier</button>
         </div>
       </div>
     </div>
@@ -513,7 +681,7 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;
   <div class="site-footer">
     <div class="footer-inner">
       <div><div class="fb-name"><span class="mo">MONARCH</span><span class="in">Intel</span></div><div class="fb-sub">MONSTERVERSE INTELLIGENCE ARCHIVE</div><div class="fb-desc">An independent fan archive built by fans, for fans. Not affiliated with Legendary Pictures or Warner Bros.</div></div>
-      <div><div class="fc-head">NAVIGATE</div><a class="fc-link" onclick="showPage('watchorder')">Watch Order</a><a class="fc-link" onclick="showPage('titandex')">TitanDex</a><a class="fc-link" onclick="showPage('episodes')">Episode Tracker</a><a class="fc-link" onclick="showPage('sizechart')">Size Chart</a><a class="fc-link" onclick="showPage('battle')">Battle Simulator</a><a class="fc-link" onclick="showPage('dossier')">Dossier Generator</a></div>
+      <div><div class="fc-head">NAVIGATE</div><a class="fc-link" onclick="showPage('watchorder')">Watch Order</a><a class="fc-link" onclick="showPage('titandex')">TitanDex</a><a class="fc-link" onclick="showPage('episodes')">Episode Tracker</a><a class="fc-link" onclick="showPage('sizechart')">Size Chart</a><a class="fc-link" onclick="showPage('battle')">Battle Simulator</a><a class="fc-link" onclick="window.location.href='/dossier'">Dossier Generator</a></div>
       <div><div class="fc-head">PROJECT</div><a class="fc-link">Discord Community</a><a class="fc-link">Submit Fan Theory</a><a class="fc-link">Titan Wishlist</a><a class="fc-link">About MonarchIntel</a></div>
     </div>
     <div class="footer-bottom">
@@ -739,11 +907,46 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:9999;
 <script id="movies-data" type="application/json" set:html={moviesJSON}></script>
 <script id="episodes-data" type="application/json" set:html={episodesJSON}></script>
 <script id="timeline-data" type="application/json" set:html={timelineJSON}></script>
+<script id="sources-data" type="application/json" set:html={sourcesJSON}></script>
 <script is:inline>
 // ═══════════════════════════════════════════════════
 //  DATA
 // ═══════════════════════════════════════════════════
 const TITANS = JSON.parse(document.getElementById('titans-data').textContent);
+const SOURCES = JSON.parse(document.getElementById('sources-data').textContent);
+
+function getAttrHTML(sourcesObj, dir) {
+  if (!sourcesObj) return '';
+  const dSrcs = (sourcesObj.data || []).map(k => SOURCES[k]).filter(Boolean);
+  const iSrcs = (sourcesObj.image || []).map(k => SOURCES[k]).filter(Boolean);
+  if (!dSrcs.length && !iSrcs.length) return '';
+  
+  let popHTML = '';
+  if (dSrcs.length) {
+    popHTML += `<div class="ap-sec"><div class="ap-lbl">DATA SOURCES</div>` + dSrcs.map(s => `
+      <div class="ap-item">
+        ${s.logo ? `<img class="ap-logo" src="${s.logo}" alt="${s.name}">` : `<div class="ap-logo" style="background:var(--border)"></div>`}
+        <div class="ap-txt"><strong>${s.url ? `<a href="${s.url}" target="_blank" rel="noopener">${s.name}</a>` : s.name}</strong>${s.credit}</div>
+      </div>
+    `).join('') + `</div>`;
+  }
+  if (iSrcs.length) {
+    popHTML += `<div class="ap-sec"><div class="ap-lbl">IMAGE SOURCES</div>` + iSrcs.map(s => `
+      <div class="ap-item">
+        ${s.logo ? `<img class="ap-logo" src="${s.logo}" alt="${s.name}">` : `<div class="ap-logo" style="background:var(--border)"></div>`}
+        <div class="ap-txt"><strong>${s.url ? `<a href="${s.url}" target="_blank" rel="noopener">${s.name}</a>` : s.name}</strong>${s.credit}</div>
+      </div>
+    `).join('') + `</div>`;
+  }
+  
+  const dirClass = dir === 'down' ? ' down' : '';
+  return `
+    <div class="attr-wrap${dirClass}" title="View attributions">
+      <div class="attr-icon">i</div>
+      <div class="attr-pop">${popHTML}</div>
+    </div>
+  `;
+}
 const strip = document.getElementById('home-titan-strip');
 if(strip) {
   strip.innerHTML = TITANS.slice(0,7).map(t=>`
@@ -835,7 +1038,7 @@ function renderWO(data){
   el.innerHTML = data.map((m,i)=>`
     <div class="wo-item" onclick="toggleWO(this)" data-era="${m.era}">
       <div class="wo-num">${String(m.num).padStart(2,'0')}</div>
-      <div class="wo-icon">${m.icon}</div>
+      <div class="wo-icon">${m.poster ? `<img src="${m.poster}" alt="${m.title}" loading="lazy">` : m.icon}</div>
       <div class="wo-body">
         <div class="wo-title">${m.title}</div>
         <div class="wo-meta">
@@ -854,11 +1057,24 @@ function renderWO(data){
           ${m.highlights?`<div style="font-family:var(--font-mono);font-size:0.72rem;color:var(--nuclear);letter-spacing:2px;margin-top:0.8rem;line-height:1.6">★ ${m.highlights}</div>`:''}
         </div>
       </div>
-      <div class="wo-right"><div class="wo-score">★${m.score}</div><div class="wo-plat">${m.platform}</div></div>
+      <div class="wo-right">
+        <div class="wo-score">★${m.rating ?? m.score}</div>
+        <div class="wo-plat">${m.platform}</div>
+        <div style="margin-top:1rem;display:flex;justify-content:flex-end">${getAttrHTML(m.sources)}</div>
+      </div>
     </div>
   `).join('');
 }
-function toggleWO(el){const ex=el.querySelector('.wo-expand');ex.classList.toggle('show');el.classList.toggle('open')}
+function toggleWO(el){
+  const ex=el.querySelector('.wo-expand');ex.classList.toggle('show');el.classList.toggle('open');
+  // Need to handle overflow on the list to prevent clipping expanding items
+  if (el.classList.contains('open')) {
+    el.style.overflow = 'visible';
+    el.parentElement.style.overflow = 'visible';
+  } else {
+    el.style.overflow = '';
+  }
+}
 function filterWO(){
   const q=document.getElementById('wo-search').value.toLowerCase();
   const f=MOVIES.filter(m=>(woEra==='all'||m.era===woEra)&&(m.title.toLowerCase().includes(q)||m.titans.join(' ').toLowerCase().includes(q)));
@@ -873,7 +1089,7 @@ renderWO(MOVIES);
 function renderTdex(data){
   document.getElementById('tdex-count').textContent=data.length+' TITANS';
   document.getElementById('tdex-grid').innerHTML=data.map(t=>`
-    <div class="tcard" data-a="${t.align}" onclick="openTitan('${t.id}')">
+    <div class="tcard" data-a="${t.align}" data-threat="${t.threat.toLowerCase()}" onclick="openTitan('${t.id}')">
       <div class="tc-top"><span class="tc-id">${t.id}</span><span class="badge b-sm tl-${t.threat.toLowerCase()}">${t.threat.toUpperCase()}</span></div>
       <div class="tc-emoji">${t.emoji}</div>
       <div class="tc-name">${t.name}</div>
@@ -913,7 +1129,10 @@ function openTitan(id){
         <div class="mhd-name">${t.name.toUpperCase()}</div>
         <div class="mhd-alias">${t.alias}</div>
       </div>
-      <button class="mclose" onclick="closeModal()">✕</button>
+      <div style="display:flex;align-items:center;gap:1.5rem">
+        ${getAttrHTML(t.sources, 'down')}
+        <button class="mclose" onclick="closeModal()">✕</button>
+      </div>
     </div>
     <div class="mbody">
       <div>
@@ -963,10 +1182,11 @@ function closeModal(){document.getElementById('titan-modal').classList.remove('o
 // ═══════════════════════════════════════════════════
 //  EPISODES
 // ═══════════════════════════════════════════════════
-let activeShow='monarch';
+let activeShow = '';
 function renderShowTabs(){
+  if(!activeShow && SHOWS.length) activeShow = SHOWS[0].id;
   document.getElementById('show-tabs').innerHTML=SHOWS.map(s=>`
-    <button class="stab ${s.id===activeShow?'on':''}" onclick="switchShow('${s.id}')">${s.emoji} ${s.title.split(':')[0]||s.title.split(' ').slice(0,2).join(' ')}</button>
+    <button class="stab ${s.id===activeShow?'on':''}" onclick="switchShow('${s.id}')">${s.emoji} ${s.title}</button>
   `).join('');
 }
 function switchShow(id){activeShow=id;renderShowTabs();renderEps();}
@@ -975,6 +1195,7 @@ function renderEps(){
   document.getElementById('ep-list').innerHTML=show.episodes.map(ep=>`
     <div class="ep-item" onclick="toggleEp(this)">
       <div class="ep-num">${String(ep.num).padStart(2,'0')}</div>
+      <div class="ep-still">${ep.still ? `<img src="${ep.still}" alt="${ep.title}" loading="lazy">` : show.emoji}</div>
       <div>
         <div class="ep-title">${ep.title}</div>
         <div class="ep-air">${ep.air}</div>
@@ -983,10 +1204,19 @@ function renderEps(){
           <div class="ep-syn">${ep.synopsis}</div>
         </div>
       </div>
+      <div style="text-align:right;padding-top:0.15rem">${getAttrHTML(show.sources)}</div>
     </div>
   `).join('');
 }
-function toggleEp(el){const ex=el.querySelector('.ep-expand');ex.classList.toggle('show');el.classList.toggle('open')}
+function toggleEp(el){
+  const ex=el.querySelector('.ep-expand');ex.classList.toggle('show');el.classList.toggle('open');
+  if (el.classList.contains('open')) {
+    el.style.overflow = 'visible';
+    el.parentElement.style.overflow = 'visible';
+  } else {
+    el.style.overflow = '';
+  }
+}
 renderShowTabs();renderEps();
 
 // ═══════════════════════════════════════════════════
@@ -1004,7 +1234,8 @@ function renderSize(data){
       <div class="sbar" style="height:${Math.max((s.height/max)*100,1)}%">
         <div class="sbar-inner" style="${s.type==='aerial'?'background:linear-gradient(to top,var(--sky),rgba(0,170,255,0.4))':s.type==='aquatic'?'background:linear-gradient(to top,#0055aa,#0099ff)':''}"></div>
       </div>
-      <div class="sbar-label">${s.emoji} ${s.name}</div>
+      <div class="sbar-label">${s.emoji}</div>
+      <div class="sbar-tooltip">${s.name} — ${s.height}m</div>
     </div>
   `).join('');
   document.getElementById('size-legend').innerHTML=sorted.map(s=>`
@@ -1147,6 +1378,25 @@ function renderTL(){
   `).join('');
 }
 renderTL();
+
+// ═══════════════════════════════════════════════════
+//  SECTION ATTRIBUTIONS (Size Chart / Relations / Timeline)
+// ═══════════════════════════════════════════════════
+// These sections are editorial syntheses — no TMDB imagery
+const editorialSources = { data: ['wikizilla', 'monarchintel'], image: [] };
+(function injectSectionAttribution() {
+  const targets = [
+    { id: 'page-sizechart', countSel: '.sec-count' },
+    { id: 'page-relations', countSel: '.sec-count' },
+    { id: 'page-timeline',  countSel: '.sec-count' },
+  ];
+  const attrHTML = getAttrHTML(editorialSources);
+  if (!attrHTML) return;
+  targets.forEach(({ id, countSel }) => {
+    const el = document.querySelector(`#${id} ${countSel}`);
+    if (el) el.insertAdjacentHTML('afterend', attrHTML);
+  });
+})();
 
 // ═══════════════════════════════════════════════════
 //  KEYBOARD
